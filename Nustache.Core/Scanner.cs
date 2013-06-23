@@ -8,14 +8,23 @@ namespace Nustache.Core
     public class Scanner
     {
         private static readonly Regex _markerRegex = new Regex(@"\{\{([\{]?[^}]+?\}?)\}\}");
-        private static readonly Regex _standaloneRegex = new Regex(@"(^|\r?\n)[\r\t\v ]*({\{\s*[#\/!\<\>^]+[^}]+?\}\})[\r\t\v ]*(\r?\n|$)");
+        // Remove standalone lines (lines which have only a non-variable expression on them)
+        private static readonly Regex _standaloneRegex = new Regex(
+            @"(^|\r?\n)[\r\t\v ]*({\{\s*[#\/!\<\>^]+[^}]+?\}\})[\r\t\v ]*(\r?\n|$)");
+        // Special case for standalone lines that have multiple non-variable expressions with only newlines separating them
+        // E.g.: {{#begin}}\n{{/end}}\n   (this is straight from the mustache specs)
+        private static readonly Regex _standaloneSpecialCaseRegex = new Regex(
+            @"(^|\r?\n)[\r\t\v ]*({\{\s*[#\/!\<\>^]+[^}]+?\}\})[\r\t\v\n ]*({\{\s*[#\/!\<\>^]+[^}]+?\}\})[\r\t\v ]*(\r?\n|$)");
 
         public IEnumerable<Part> Scan(string template)
         {
             int i = 0;
             Match m;
 
+            // remove standalone expressions before parsing as this greatly simplifies things.  
+            // See https://github.com/defunkt/mustache/blob/master/lib/mustache/parser.rb for how complex parsing is without this
             template = _standaloneRegex.Replace(template, match => match.Groups[1].Value + match.Groups[2].Value);
+            template = _standaloneSpecialCaseRegex.Replace(template, match => match.Groups[1].Value + match.Groups[2].Value + match.Groups[3].Value);
             
             while (true)
             {
@@ -58,12 +67,6 @@ namespace Nustache.Core
                     }
 
                     i = m.Index + m.Length;
-
-                    //Match s;
-                    //if (standalone && (s = _stripRegex.Match(template, i)).Success)
-                    //    i += s.Length;
-                    //if (stripOutNewLine && template[i] == '\n')
-                    //    i += 1;
                 }
                 else
                 {
