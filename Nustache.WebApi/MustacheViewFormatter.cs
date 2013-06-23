@@ -9,12 +9,22 @@ using System.IO;
 
 namespace Nustache.WebApi
 {
-    public class NustacheViewFormatter : BufferedMediaTypeFormatter
+    public class MustacheViewFormatter : BufferedMediaTypeFormatter
     {
         private readonly MemoryCache _templateCache = MemoryCache.Default;
-        private readonly IViewLocator _viewLocator;
+        private readonly ITemplateLoader _templateLoader;
 
-        public NustacheViewFormatter(IViewLocator viewLocator = null)
+        /// <summary>
+        /// Media Type Formatter for rendering Web Api models as HTML via mustache.
+        /// 
+        /// Caches templates in MemoryCache.Default once they've been loaded and parsed to improve performance.
+        /// 
+        /// Implement ITemplateLoader if you want more control over template loading.
+        /// If you just want to choose a new path or file extension, use the WebsiteFileTemplateLoader,
+        /// but specify a new viewLocationFormat.
+        /// </summary>
+        /// <param name="templateLoader">Indicates to the formatter which templates are available and loads them.</param>
+        public MustacheViewFormatter(ITemplateLoader templateLoader = null)
         {
             SupportedMediaTypes.Add(new System.Net.Http.Headers.MediaTypeHeaderValue("text/html"));
             SupportedMediaTypes.Add(new System.Net.Http.Headers.MediaTypeHeaderValue("applictaion/xhtml"));
@@ -23,7 +33,7 @@ namespace Nustache.WebApi
             SupportedEncodings.Add(new UTF8Encoding(encoderShouldEmitUTF8Identifier: false, throwOnInvalidBytes: true));
             SupportedEncodings.Add(new UnicodeEncoding(bigEndian: false, byteOrderMark: true, throwOnInvalidBytes: true));
 
-            _viewLocator = viewLocator ?? new WebsiteViewLocator();
+            _templateLoader = templateLoader ?? new WebsiteFileTemplateLoader();
         }
 
         public override bool CanReadType(Type type)
@@ -34,7 +44,7 @@ namespace Nustache.WebApi
         public override bool CanWriteType(Type type)
         {
             return _templateCache.Contains(ViewNameFrom(type)) || 
-                _viewLocator.CanProcess(type);
+                _templateLoader.CanLoad(type);
         }
 
         private string ViewNameFrom(Type type)
@@ -54,11 +64,17 @@ namespace Nustache.WebApi
             else
             {
                 template = new Template();
-                template.Load(File.OpenText(_viewLocator.Find(type)));
+                using (var streamReader = _templateLoader.Load(type))
+                {
+                    template.Load(streamReader);
+                }
                 _templateCache[viewName] = template;
             }
 
-            template.Render(value, new StreamWriter(writeStream), null);
+            using (var templateWriter = new StreamWriter(writeStream))
+            {
+                template.Render(value, templateWriter, null);
+            }
         }
     }
 }

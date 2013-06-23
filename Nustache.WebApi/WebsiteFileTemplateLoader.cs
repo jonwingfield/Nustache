@@ -6,14 +6,17 @@ using System.IO;
 
 namespace Nustache.WebApi
 {
-    public class WebsiteViewLocator : IViewLocator
+    public class WebsiteFileTemplateLoader : ITemplateLoader
     {
         private readonly string _viewLocationFormat;
         private readonly string root;
-
+        
+        /// <summary>
+        /// Loads templates from the website folder structure. The default location is [VirtualDir]\Views\{name}.mustache.
+        /// </summary>
         /// <param name="viewLocationFormat">Format string for finding the view. The Name of the model returned from 
         /// your ApiController will be used as the parameter to the format.</param>
-        public WebsiteViewLocator(string viewLocationFormat = "\\Views\\{0}.mustache")
+        public WebsiteFileTemplateLoader(string viewLocationFormat = "\\Views\\{0}.mustache")
         {
             _viewLocationFormat = viewLocationFormat;
 
@@ -25,16 +28,19 @@ namespace Nustache.WebApi
                         .Replace("\\AcceptanceTests", string.Empty);
         }
 
-        public bool CanProcess(Type viewType)
+        public bool CanLoad(Type viewType)
         {
-            return File.Exists(Find(viewType));
+            return File.Exists(PathTo(viewType));
         }
 
-        public string Find(Type viewType)
+        public StreamReader Load(Type viewType)
         {
-            var path = root + String.Format(_viewLocationFormat, viewType.Name);
+            return File.OpenText(PathTo(viewType));
+        }
 
-            return path;
+        private string PathTo(Type viewType)
+        {
+            return root + String.Format(_viewLocationFormat, viewType.Name);
         }
     }
 }

@@ -43,10 +43,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="IViewLocator.cs" />
-    <Compile Include="NustacheViewFormatter.cs" />
+    <Compile Include="ITemplateLoader.cs" />
+    <Compile Include="MustacheViewFormatter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="WebsiteViewLocator.cs" />
+    <Compile Include="WebsiteFileTemplateLoader.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Nustache.Core\Nustache.Core.csproj">
