@@ -5,6 +5,7 @@ using System.Text;
 using NUnit.Framework;
 using System.IO;
 using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
 
 namespace Nustache.Core.Tests
 {
@@ -41,14 +42,11 @@ namespace Nustache.Core.Tests
         [Test, TestCaseSource("PartialsTests")]
         public void Partials(JToken test) { RunMustacheSpecs(test); }
 
-        //private static readonly JToken[] LambdasTests = GetSpecs("lambdas");
-
-        //[Test, TestCaseSource("LambdasTests")]
-        //public void Lambdas(JToken test) { RunMustacheSpecs(test); }
-
         private static void RunMustacheSpecs(JToken test)
         {
-            var rendered = Nustache.Core.Render.StringToString(test["template"].ToString(), test["data"], name =>
+            var data = new System.Web.Script.Serialization.JavaScriptSerializer().DeserializeObject(test["data"].ToString());
+
+            var rendered = Nustache.Core.Render.StringToString(test["template"].ToString(), data, name =>
                 {
                     if (test["partials"] != null && test["partials"][name] != null)
                     {
