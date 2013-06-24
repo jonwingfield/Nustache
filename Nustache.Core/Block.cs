@@ -39,7 +39,8 @@ namespace Nustache.Core
             {
                 context.Push(this, value);
 
-                expressions.Add(base.Compile(context));
+                expressions.Add(context.WrapExpression(value,
+                    base.Compile(context)));
 
                 context.Pop();
             }

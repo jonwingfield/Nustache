@@ -17,6 +17,7 @@ namespace Nustache.Core.Tests
     public class SubObject
     {
         public string SubText { get; set; }
+        public bool TestBool { get; set; }
     }
 
     [TestFixture]
@@ -78,6 +79,26 @@ namespace Nustache.Core.Tests
             var compiled = template.Compile<TestObject>(null);
             var result = compiled(new TestObject { Sub = new SubObject { SubText = "Blah" } });
             Assert.AreEqual("A template with Blah here", result);
+        }
+
+        [Test]
+        public void Boolean_Sections()
+        {
+            var template = new Template();
+            template.Load(new StringReader("A template with {{#TestBool}}data here{{/TestBool}}"));
+            var compiled = template.Compile<TestObject>(null);
+            var result = compiled(new TestObject { TestBool = false });
+            Assert.AreEqual("A template with ", result);
+        }
+
+        [Test]
+        public void Boolean_Nested_Sections()
+        {
+            var template = new Template();
+            template.Load(new StringReader("A template with {{#Sub.TestBool}}data here{{/Sub.TestBool}}"));
+            var compiled = template.Compile<TestObject>(null);
+            var result = compiled(new TestObject { Sub = new SubObject { TestBool = false } });
+            Assert.AreEqual("A template with ", result);
         }
 
         //[Test]

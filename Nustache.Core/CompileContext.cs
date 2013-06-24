@@ -36,17 +36,7 @@ namespace Nustache.Core
             var value = GetInnerExpression(path);
             yield return value;
 
-            //if (value == null)
-            //{
-            //    yield break;
-            //}
-            //else if (value is bool)
-            //{
-            //    //if ((bool)value)
-            //    //{
-            //    //    yield return Expression.Constant(value);
-            //    //}
-            //}
+            
             //else if (value is string)
             //{
             //    if (!string.IsNullOrEmpty((string)value))
@@ -138,6 +128,16 @@ namespace Nustache.Core
             _targetObjectStack.Pop();
         }
 
-
+        internal Expression WrapExpression(Expression conditional, Expression inner)
+        {
+            if (conditional.Type == typeof(bool))
+            {
+                return Expression.Condition(
+                    conditional,
+                    inner,
+                    Expression.Constant(""));
+            }
+            else return inner;
+        }
     }
 }
