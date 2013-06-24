@@ -43,7 +43,9 @@ namespace Nustache.Core
 
             var context = new CompileContext(this, typeof(T), param, templateLocator);
 
-            return (Expression.Lambda<Func<T, string>>(Compile(context), param)).Compile();
+            var expression = Compile(context);
+            Console.WriteLine(expression.ToString());
+            return (Expression.Lambda<Func<T, string>>(expression, param)).Compile();
         }
 
         /// <summary>
