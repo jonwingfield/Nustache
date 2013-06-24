@@ -28,7 +28,7 @@ namespace Nustache.Core
 
         internal Expression CompiledGetter(string path)
         {
-            return ValueGetter.CompiledGetter(_targetObjectStack.Peek().Type, path, _targetObjectStack.Peek());
+            return GetInnerExpression(path);
         }
 
         internal IEnumerable<Expression> GetInnerExpressions(string path)
@@ -103,26 +103,27 @@ namespace Nustache.Core
         private Expression GetExpressionFromPath(Type type, string path)
         {
             var value = ValueGetter.CompiledGetter(type, path, _targetObjectStack.Peek());
-            return value;
 
-            if (value != null && !ReferenceEquals(value, ValueGetter.NoValue))
+            if (value != null)
             {
                 return value;
             }
-            return null;
-            //var names = path.Split('.');
 
-            //foreach (var name in names)
-            //{
-            //    data = ValueGetter.GetValue(data, name);
+            var names = path.Split('.');
+            value = _targetObjectStack.Peek();
 
-            //    if (data == null || ReferenceEquals(data, ValueGetter.NoValue))
-            //    {
-            //        break;
-            //    }
-            //}
+            foreach (var name in names)
+            {
+                value = ValueGetter.CompiledGetter(type, name, value);
+                type = value.Type;
 
-            //return data;
+                if (value == null)
+                {
+                    break;
+                }
+            }
+
+            return value;
         }
 
         internal void Push(Section section, Expression targetObjectRef)

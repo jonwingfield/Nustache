@@ -20,8 +20,11 @@ namespace Nustache.Core
 
         public static Expression CompiledGetter(Type targetType, string path, Expression dataParameter)
         {
-            return ValueGetterFactories.Factories.GetCompiledGetter(targetType, path)
-                .CompiledGetter(targetType, dataParameter);
+            var factory = ValueGetterFactories.Factories.GetCompiledGetter(targetType, path);
+            if (factory != null)
+                return factory.CompiledGetter(targetType, dataParameter);
+            else
+                return null;
         }
 
         #endregion

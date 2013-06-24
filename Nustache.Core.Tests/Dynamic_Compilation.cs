@@ -65,11 +65,19 @@ namespace Nustache.Core.Tests
         {
             var template = new Template();
             template.Load(new StringReader("A template with {{#Sub}} {{SubText}} here {{/Sub}}"));
-            //var result = Render.StringToString("A template with {{#Sub}} {{SubText}} here {{/Sub}}",
-            //    new TestObject { Sub = new SubObject { SubText = "Blah" } });
             var compiled = template.Compile<TestObject>(null);
             var result = compiled(new TestObject { Sub = new SubObject { SubText = "Blah" } });
             Assert.AreEqual("A template with  Blah here ", result);
+        }
+
+        [Test]
+        public void Dotted_Variable_Names()
+        {
+            var template = new Template();
+            template.Load(new StringReader("A template with {{Sub.SubText}} here"));
+            var compiled = template.Compile<TestObject>(null);
+            var result = compiled(new TestObject { Sub = new SubObject { SubText = "Blah" } });
+            Assert.AreEqual("A template with Blah here", result);
         }
 
         //[Test]
