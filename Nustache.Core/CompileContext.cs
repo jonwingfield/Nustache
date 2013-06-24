@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Linq.Expressions;
 using System.Collections;
+using Nustache.Core.Compilation;
 
 namespace Nustache.Core
 {
@@ -31,11 +32,27 @@ namespace Nustache.Core
             return GetInnerExpression(path);
         }
 
-        internal IEnumerable<Expression> GetInnerExpressions(string path)
+        internal Expression GetInnerExpressions(string path, Func<Expression, Expression> innerExpression)
         {
             var value = GetInnerExpression(path);
-            yield return value;
 
+            if (value.Type == typeof(bool))
+            {
+                return Expression.Condition(
+                    value,
+                    innerExpression(value),
+                    Expression.Constant(""));
+            }
+            else if (value.Type.GetInterface("IEnumerable") != null)
+            {
+                return CompoundExpression.Enumerator(
+                    itemCallback: innerExpression, 
+                    enumerable: value);
+            }
+            else
+            {
+                return innerExpression(value);
+            }
             
             //else if (value is string)
             //{
@@ -80,10 +97,7 @@ namespace Nustache.Core
                 {
                     var value = GetExpressionFromPath(targetObject.Type, path);
 
-                    //if (!ReferenceEquals(value, ValueGetter.NoValue))
-                    //{
-                        return value;
-                    //}
+                    return value;
                 }
             }
 
@@ -126,18 +140,6 @@ namespace Nustache.Core
         {
             _sectionStack.Pop();
             _targetObjectStack.Pop();
-        }
-
-        internal Expression WrapExpression(Expression conditional, Expression inner)
-        {
-            if (conditional.Type == typeof(bool))
-            {
-                return Expression.Condition(
-                    conditional,
-                    inner,
-                    Expression.Constant(""));
-            }
-            else return inner;
         }
     }
 }

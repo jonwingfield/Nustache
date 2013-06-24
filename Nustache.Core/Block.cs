@@ -1,6 +1,7 @@
 using System.Linq.Expressions;
 using System.Linq;
 using System.Collections.Generic;
+using Nustache.Core.Compilation;
 
 namespace Nustache.Core
 {
@@ -33,22 +34,18 @@ namespace Nustache.Core
 
         internal override System.Linq.Expressions.Expression Compile(CompileContext context)
         {
-            var expressions = new List<Expression>();
-
-            foreach (var value in context.GetInnerExpressions(Name))
+            return context.GetInnerExpressions(Name, value =>
             {
                 context.Push(this, value);
 
-                expressions.Add(context.WrapExpression(value,
-                    base.Compile(context)));
+                var expression = CompoundExpression.NullCheck(value, 
+                    nullValue: "", 
+                    returnIfNotNull: base.Compile(context));
 
                 context.Pop();
-            }
 
-            if (expressions.Count > 0)
-                return base.Concat(expressions);
-            
-            return null;
+                return expression;
+            });
         }
 
         public override string ToString()

@@ -12,12 +12,15 @@ namespace Nustache.Core.Tests
         public string TestString { get; set; }
         public bool TestBool { get; set; }
         public SubObject Sub { get; set; }
+        public List<SubObject> Items { get; set; }
     }
 
     public class SubObject
     {
         public string SubText { get; set; }
         public bool TestBool { get; set; }
+
+        public SubObject Sub { get; set; }
     }
 
     [TestFixture]
@@ -72,6 +75,16 @@ namespace Nustache.Core.Tests
         }
 
         [Test]
+        public void Null_Nested_Template()
+        {
+            var template = new Template();
+            template.Load(new StringReader("A template with {{#Sub}} {{SubText}} here {{/Sub}}"));
+            var compiled = template.Compile<TestObject>(null);
+            var result = compiled(new TestObject { Sub = null });
+            Assert.AreEqual("A template with ", result);
+        }
+
+        [Test]
         public void Dotted_Variable_Names()
         {
             var template = new Template();
@@ -99,6 +112,95 @@ namespace Nustache.Core.Tests
             var compiled = template.Compile<TestObject>(null);
             var result = compiled(new TestObject { Sub = new SubObject { TestBool = false } });
             Assert.AreEqual("A template with ", result);
+        }
+
+        [Test]
+        public void Enumerable_Sections()
+        {
+            var template = new Template();
+            template.Load(new StringReader("A template with{{#Items}} {{SubText}} {{/Items}}"));
+            var compiled = template.Compile<TestObject>(null);
+            var result = compiled(new TestObject
+            {
+                Items = new List<SubObject>
+                {
+                    new SubObject { SubText = "a" },
+                    new SubObject { SubText = "b" },
+                    new SubObject { SubText = "c" },
+                }
+            });
+            Assert.AreEqual("A template with a  b  c ", result);
+        }
+
+        [Test]
+        public void Null_Enumerable_Values()
+        {
+            var template = new Template();
+            template.Load(new StringReader("A template with{{#Items}} {{SubText}} {{/Items}}"));
+            var compiled = template.Compile<TestObject>(null);
+            var result = compiled(new TestObject { Items = null });
+            Assert.AreEqual("A template with", result);
+        }
+
+        [Test]
+        public void Multiple_Levels_of_Enumerable_Sections()
+        {
+            var template = new Template();
+            template.Load(new StringReader(
+                @"A template with
+
+{{#Items}} 
+
+{{SubText}} 
+{{#Sub}}
+{{TestBool}}{{SubText}}
+    {{#Sub}}
+{{SubText}}
+    {{/Sub}}
+{{/Sub}} 
+
+{{/Items}}"));
+            var compiled = template.Compile<TestObject>(null);
+            var result = compiled(new TestObject
+            {
+                Items = new List<SubObject>
+                {
+                    new SubObject { SubText = "a" },
+                    new SubObject { Sub = new SubObject { 
+                        SubText = "Blah",
+                        TestBool = true,
+                        Sub = new SubObject {
+                            SubText = "Third",
+                            TestBool = false,
+                        }
+                    } },
+                    new SubObject { SubText = "c" },
+                }
+            });
+            Assert.AreEqual("A template witha  TrueBlahThirdc ", result.Replace("\r\n", ""));
+        }
+
+        [Test]
+        public void Null_Values()
+        {
+            var template = new Template();
+            template.Load(new StringReader("A template with {{TestString}} and {{TestBool}}"));
+            var compiled = template.Compile<TestObject>(null);
+            var result = compiled(new TestObject { TestString = null });
+            Assert.AreEqual("A template with  and False", result);     
+        }
+
+        // TODOs:
+        [Test]
+        public void Missing_Properties()
+        {
+
+        }
+
+        [Test]
+        public void Missing_SubProperties()
+        {
+
         }
 
         //[Test]

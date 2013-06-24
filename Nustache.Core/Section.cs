@@ -94,10 +94,19 @@ namespace Nustache.Core
 
         protected Expression Concat(IEnumerable<Expression> expressions)
         {
-            return Expression.Call(
-                   typeof(string).GetMethod("Concat",
-                       expressions.Select(_ => typeof(string)).ToArray()),
-                   expressions.ToArray());
+            var builder = Expression.Variable(typeof(StringBuilder), "builder");
+
+            var blockExpressions = new List<Expression>();
+            blockExpressions.Add(Expression.Assign(builder, Expression.New(typeof(StringBuilder))));
+            blockExpressions.AddRange(expressions.Select(item => 
+                    Expression.Call(builder, typeof(StringBuilder).GetMethod("Append", new Type[] { typeof(string) }), item)));
+            blockExpressions.Add(
+                    Expression.Call(builder, typeof(StringBuilder).GetMethod("ToString", new Type[0])));
+
+            return Expression.Block(
+                new [] { builder },
+                blockExpressions
+            );
         }
     }
 }
