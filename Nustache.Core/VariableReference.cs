@@ -1,6 +1,7 @@
 using System;
 using System.Text.RegularExpressions;
 using System.Text;
+using System.Linq.Expressions;
 
 namespace Nustache.Core
 {
@@ -52,9 +53,11 @@ namespace Nustache.Core
             return string.Format("VariableReference(\"{0}\")", _path);
         }
 
-        public override System.Linq.Expressions.Expression Compile<T>(StringBuilder builder)
+        internal override Expression Compile(CompileContext context)
         {
-            throw new NotImplementedException();
+            var toStringExp = Expression.Call(context.CompiledGetter(_path), context.TargetType.GetMethod("ToString"));
+
+            return toStringExp;
         }
     }
 }

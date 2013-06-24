@@ -37,7 +37,7 @@ namespace Nustache.Core
             return string.Format("EndSection(\"{0}\")", _name);
         }
 
-        public override Expression Compile<T>(StringBuilder builder)
+        internal override Expression Compile(CompileContext context)
         {
             throw new NotImplementedException();
         }

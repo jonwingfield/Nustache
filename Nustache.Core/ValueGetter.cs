@@ -3,6 +3,7 @@ using System.Collections;
 using System.ComponentModel;
 using System.Reflection;
 using System.Xml;
+using System.Linq.Expressions;
 
 namespace Nustache.Core
 {
@@ -17,11 +18,19 @@ namespace Nustache.Core
             return ValueGetterFactories.Factories.GetValueGetter(target, name).GetValue();
         }
 
+        public static Expression CompiledGetter(Type targetType, string name, ParameterExpression dataParameter)
+        {
+            return ValueGetterFactories.Factories.GetCompiledGetter(targetType, name)
+                .CompiledGetter(targetType, dataParameter);
+        }
+
         #endregion
 
         #region Abstract methods
 
         public abstract object GetValue();
+
+        public abstract Expression CompiledGetter(Type targetType, ParameterExpression dataParameter);
 
         #endregion
     }
@@ -98,6 +107,11 @@ namespace Nustache.Core
             }
             return false;
         }
+
+        public override Expression CompiledGetter(Type targetType, ParameterExpression dataParameter)
+        {
+            throw new NotImplementedException();
+        }
     }
 
     internal class PropertyDescriptorValueGetter : ValueGetter
@@ -114,6 +128,11 @@ namespace Nustache.Core
         public override object GetValue()
         {
             return _propertyDescriptor.GetValue(_target);
+        }
+
+        public override Expression CompiledGetter(Type targetType, ParameterExpression dataParameter)
+        {
+            throw new NotImplementedException();
         }
     }
 
@@ -132,6 +151,11 @@ namespace Nustache.Core
         {
             return _methodInfo.Invoke(_target, null);
         }
+
+        public override Expression CompiledGetter(Type targetType, ParameterExpression dataParameter)
+        {
+            throw new NotImplementedException();
+        }
     }
 
     internal class PropertyInfoValueGetter : ValueGetter
@@ -148,6 +172,11 @@ namespace Nustache.Core
         public override object GetValue()
         {
             return _propertyInfo.GetValue(_target, null);
+        }
+
+        public override Expression CompiledGetter(Type targetType, ParameterExpression dataParam)
+        {
+            return Expression.Property(dataParam, _propertyInfo.GetGetMethod());
         }
     }
 
@@ -166,6 +195,11 @@ namespace Nustache.Core
         {
             return _fieldInfo.GetValue(_target);
         }
+
+        public override Expression CompiledGetter(Type targetType, ParameterExpression dataParameter)
+        {
+            throw new NotImplementedException();
+        }
     }
 
     internal class DictionaryValueGetter : ValueGetter
@@ -182,6 +216,11 @@ namespace Nustache.Core
         public override object GetValue()
         {
             return _target[_key];
+        }
+
+        public override Expression CompiledGetter(Type targetType, ParameterExpression dataParameter)
+        {
+            throw new NotImplementedException();
         }
     }
 
@@ -202,6 +241,11 @@ namespace Nustache.Core
         {
             return _getMethod.Invoke(_target, new object[] { _key });
         }
+
+        public override Expression CompiledGetter(Type targetType, ParameterExpression dataParameter)
+        {
+            throw new NotImplementedException();
+        }
     }
 
     internal class NoValueGetter : ValueGetter
@@ -209,6 +253,11 @@ namespace Nustache.Core
         public override object GetValue()
         {
             return NoValue;
+        }
+
+        public override Expression CompiledGetter(Type targetType, ParameterExpression dataParameter)
+        {
+            throw new NotImplementedException();
         }
     }
 }

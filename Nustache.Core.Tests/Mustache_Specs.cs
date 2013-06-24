@@ -29,46 +29,6 @@ namespace Nustache.Core.Tests
     {
         private static readonly JToken[] SectionTests = GetSpecs("sections");
 
-        [Test]
-        public void CompileLiteralTemplate()
-        {
-            var template = new Template();
-            template.Load(new StringReader("This is plain text"));
-            var compiled = template.CompileTemplate<DottedNamesTruthy>();
-            Assert.AreEqual("This is plain text", compiled());
-        }
-
-        [Test]
-        public void CompileLiteralTemplateWithComment()
-        {
-            var template = new Template();
-            template.Load(new StringReader("This is {{!comment}}plain text"));
-            var compiled = template.CompileTemplate<DottedNamesTruthy>();
-            Assert.AreEqual("This is plain text", compiled());
-        }
-
-        [Test]
-        public void NestedSection()
-        {
-            var test = SectionTests.First(x => x["name"].ToString() == "Dotted Names - Truthy");
-
-            var template = new Template();
-            template.Load(new StringReader(test["template"].ToString()));
-            //template.Compile<DottedNamesTruthy>();
-            var rendered = Nustache.Core.Render.StringToString(test["template"].ToString(), new DottedNamesTruthy
-            {
-                a = new DottedNamesTruthy.Inner1
-                {
-                    b = new DottedNamesTruthy.Inner2
-                    {
-                        c = true
-                    }
-                }
-            });
-
-            Assert.AreEqual(test["expected"].ToString(), rendered);
-        }
-
         [Test, TestCaseSource("SectionTests")]
         public void Sections(JToken test) { RunMustacheSpecs(test); }
 

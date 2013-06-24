@@ -6,7 +6,7 @@ namespace Nustache.Core
     {
         public abstract void Render(RenderContext context);
 
-        public abstract Expression Compile<T>(StringBuilder builder) where T : class;
+        internal abstract Expression Compile(CompileContext context);
 
         public abstract string Source();
     }

@@ -1,5 +1,6 @@
 using System;
 using System.Text;
+using System.Linq.Expressions;
 
 namespace Nustache.Core
 {
@@ -34,7 +35,7 @@ namespace Nustache.Core
             return string.Format("TemplateInclude(\"{0}\")", _name);
         }
 
-        public override System.Linq.Expressions.Expression Compile<T>(StringBuilder builder)
+        internal override Expression Compile(CompileContext context)
         {
             throw new NotImplementedException();
         }

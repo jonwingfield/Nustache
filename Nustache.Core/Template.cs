@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq.Expressions;
 
 namespace Nustache.Core
 {
@@ -34,6 +35,15 @@ namespace Nustache.Core
             var parser = new Parser();
 
             parser.Parse(this, scanner.Scan(template));
+        }
+
+        public Func<T, string> Compile<T>(TemplateLocator templateLocator) where T : class
+        {
+            var param = Expression.Parameter(typeof(T), "data");
+
+            var context = new CompileContext(this, typeof(T), param, templateLocator);
+
+            return (Expression.Lambda<Func<T, string>>(Compile(context), param)).Compile();
         }
 
         /// <summary>

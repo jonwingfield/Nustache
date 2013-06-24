@@ -35,7 +35,7 @@ namespace Nustache.Core
             return string.Format("LiteralText(\"{0}\")", _text);
         }
 
-        public override Expression Compile<T>(StringBuilder builder)
+        internal override Expression Compile(CompileContext context)
         {
             return Expression.Constant(_text, typeof(string));
         }

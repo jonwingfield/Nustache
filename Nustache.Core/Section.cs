@@ -84,17 +84,12 @@ namespace Nustache.Core
             return "{{#" + _name + "}}" + InnerSource() + "{{/" + _name + "}}";
         }
 
-        public override System.Linq.Expressions.Expression Compile<T>(StringBuilder builder)
+        internal override Expression Compile(CompileContext context)
         {
             return Expression.Call(typeof(String).GetMethod("Concat", 
                 _parts.Select(part => typeof(String)).ToArray()),
-                _parts.Select(part => part.Compile<T>(builder)).ToArray());
+                _parts.Select(part => part.Compile(context)).ToArray());
         }
 
-        public Func<string> CompileTemplate<T>() where T : class
-        {
-            StringBuilder builder = new StringBuilder();
-            return (Func<string>)Expression.Lambda(Compile<T>(builder)).Compile();
-        }
     }
 }
