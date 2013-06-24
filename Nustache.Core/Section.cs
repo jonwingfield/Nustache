@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Linq.Expressions;
+using System.Linq;
 
 namespace Nustache.Core
 {
@@ -80,6 +82,19 @@ namespace Nustache.Core
         public override string Source()
         {
             return "{{#" + _name + "}}" + InnerSource() + "{{/" + _name + "}}";
+        }
+
+        public override System.Linq.Expressions.Expression Compile<T>(StringBuilder builder)
+        {
+            return Expression.Call(typeof(String).GetMethod("Concat", 
+                _parts.Select(part => typeof(String)).ToArray()),
+                _parts.Select(part => part.Compile<T>(builder)).ToArray());
+        }
+
+        public Func<string> CompileTemplate<T>() where T : class
+        {
+            StringBuilder builder = new StringBuilder();
+            return (Func<string>)Expression.Lambda(Compile<T>(builder)).Compile();
         }
     }
 }

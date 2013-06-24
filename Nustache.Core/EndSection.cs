@@ -1,4 +1,6 @@
 using System;
+using System.Linq.Expressions;
+using System.Text;
 
 namespace Nustache.Core
 {
@@ -33,6 +35,11 @@ namespace Nustache.Core
         public override string ToString()
         {
             return string.Format("EndSection(\"{0}\")", _name);
+        }
+
+        public override Expression Compile<T>(StringBuilder builder)
+        {
+            throw new NotImplementedException();
         }
     }
 }

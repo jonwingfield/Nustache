@@ -1,4 +1,6 @@
 using System;
+using System.Linq.Expressions;
+using System.Text;
 
 namespace Nustache.Core
 {
@@ -31,6 +33,11 @@ namespace Nustache.Core
         public override string ToString()
         {
             return string.Format("LiteralText(\"{0}\")", _text);
+        }
+
+        public override Expression Compile<T>(StringBuilder builder)
+        {
+            return Expression.Constant(_text, typeof(string));
         }
     }
 }
