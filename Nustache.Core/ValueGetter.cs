@@ -18,9 +18,9 @@ namespace Nustache.Core
             return ValueGetterFactories.Factories.GetValueGetter(target, name).GetValue();
         }
 
-        public static Expression CompiledGetter(Type targetType, string name, ParameterExpression dataParameter)
+        public static Expression CompiledGetter(Type targetType, string path, Expression dataParameter)
         {
-            return ValueGetterFactories.Factories.GetCompiledGetter(targetType, name)
+            return ValueGetterFactories.Factories.GetCompiledGetter(targetType, path)
                 .CompiledGetter(targetType, dataParameter);
         }
 
@@ -30,7 +30,7 @@ namespace Nustache.Core
 
         public abstract object GetValue();
 
-        public abstract Expression CompiledGetter(Type targetType, ParameterExpression dataParameter);
+        public abstract Expression CompiledGetter(Type targetType, Expression dataParameter);
 
         #endregion
     }
@@ -108,7 +108,7 @@ namespace Nustache.Core
             return false;
         }
 
-        public override Expression CompiledGetter(Type targetType, ParameterExpression dataParameter)
+        public override Expression CompiledGetter(Type targetType, Expression dataParameter)
         {
             throw new NotImplementedException();
         }
@@ -130,7 +130,7 @@ namespace Nustache.Core
             return _propertyDescriptor.GetValue(_target);
         }
 
-        public override Expression CompiledGetter(Type targetType, ParameterExpression dataParameter)
+        public override Expression CompiledGetter(Type targetType, Expression dataParameter)
         {
             throw new NotImplementedException();
         }
@@ -152,7 +152,7 @@ namespace Nustache.Core
             return _methodInfo.Invoke(_target, null);
         }
 
-        public override Expression CompiledGetter(Type targetType, ParameterExpression dataParameter)
+        public override Expression CompiledGetter(Type targetType, Expression dataParameter)
         {
             throw new NotImplementedException();
         }
@@ -174,9 +174,9 @@ namespace Nustache.Core
             return _propertyInfo.GetValue(_target, null);
         }
 
-        public override Expression CompiledGetter(Type targetType, ParameterExpression dataParam)
+        public override Expression CompiledGetter(Type targetType, Expression dataParameter)
         {
-            return Expression.Property(dataParam, _propertyInfo.GetGetMethod());
+            return Expression.Property(dataParameter, _propertyInfo.GetGetMethod());
         }
     }
 
@@ -196,7 +196,7 @@ namespace Nustache.Core
             return _fieldInfo.GetValue(_target);
         }
 
-        public override Expression CompiledGetter(Type targetType, ParameterExpression dataParameter)
+        public override Expression CompiledGetter(Type targetType, Expression dataParameter)
         {
             throw new NotImplementedException();
         }
@@ -218,7 +218,7 @@ namespace Nustache.Core
             return _target[_key];
         }
 
-        public override Expression CompiledGetter(Type targetType, ParameterExpression dataParameter)
+        public override Expression CompiledGetter(Type targetType, Expression dataParameter)
         {
             throw new NotImplementedException();
         }
@@ -242,7 +242,7 @@ namespace Nustache.Core
             return _getMethod.Invoke(_target, new object[] { _key });
         }
 
-        public override Expression CompiledGetter(Type targetType, ParameterExpression dataParameter)
+        public override Expression CompiledGetter(Type targetType, Expression dataParameter)
         {
             throw new NotImplementedException();
         }
@@ -255,7 +255,7 @@ namespace Nustache.Core
             return NoValue;
         }
 
-        public override Expression CompiledGetter(Type targetType, ParameterExpression dataParameter)
+        public override Expression CompiledGetter(Type targetType, Expression dataParameter)
         {
             throw new NotImplementedException();
         }

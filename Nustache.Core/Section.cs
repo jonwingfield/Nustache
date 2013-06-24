@@ -86,10 +86,18 @@ namespace Nustache.Core
 
         internal override Expression Compile(CompileContext context)
         {
-            return Expression.Call(typeof(String).GetMethod("Concat", 
-                _parts.Select(part => typeof(String)).ToArray()),
-                _parts.Select(part => part.Compile(context)).ToArray());
+            var parts = _parts.Select(part => part.Compile(context))
+                .Where(part => part != null)
+                .ToList();
+            return Concat(parts);
         }
 
+        protected Expression Concat(IEnumerable<Expression> expressions)
+        {
+            return Expression.Call(
+                   typeof(string).GetMethod("Concat",
+                       expressions.Select(_ => typeof(string)).ToArray()),
+                   expressions.ToArray());
+        }
     }
 }

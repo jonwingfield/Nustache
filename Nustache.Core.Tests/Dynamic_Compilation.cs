@@ -11,6 +11,12 @@ namespace Nustache.Core.Tests
     {
         public string TestString { get; set; }
         public bool TestBool { get; set; }
+        public SubObject Sub { get; set; }
+    }
+
+    public class SubObject
+    {
+        public string SubText { get; set; }
     }
 
     [TestFixture]
@@ -52,6 +58,18 @@ namespace Nustache.Core.Tests
             var compiled = template.Compile<TestObject>(null);
             var result = compiled(new TestObject { TestString = "<Hello> \"", TestBool = true });
             Assert.AreEqual("A template with &lt;Hello&gt; &quot; and True", result);
+        }
+
+        [Test]
+        public void NestedTemplates()
+        {
+            var template = new Template();
+            template.Load(new StringReader("A template with {{#Sub}} {{SubText}} here {{/Sub}}"));
+            //var result = Render.StringToString("A template with {{#Sub}} {{SubText}} here {{/Sub}}",
+            //    new TestObject { Sub = new SubObject { SubText = "Blah" } });
+            var compiled = template.Compile<TestObject>(null);
+            var result = compiled(new TestObject { Sub = new SubObject { SubText = "Blah" } });
+            Assert.AreEqual("A template with  Blah here ", result);
         }
 
         //[Test]

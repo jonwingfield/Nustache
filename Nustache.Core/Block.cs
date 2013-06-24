@@ -1,3 +1,7 @@
+using System.Linq.Expressions;
+using System.Linq;
+using System.Collections.Generic;
+
 namespace Nustache.Core
 {
     public class Block : Section
@@ -25,6 +29,25 @@ namespace Nustache.Core
 
                 context.Pop();
             }
+        }
+
+        internal override System.Linq.Expressions.Expression Compile(CompileContext context)
+        {
+            var expressions = new List<Expression>();
+
+            foreach (var value in context.GetInnerExpressions(Name))
+            {
+                context.Push(this, value);
+
+                expressions.Add(base.Compile(context));
+
+                context.Pop();
+            }
+
+            if (expressions.Count > 0)
+                return base.Concat(expressions);
+            
+            return null;
         }
 
         public override string ToString()
