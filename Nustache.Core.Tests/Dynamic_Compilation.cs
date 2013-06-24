@@ -44,6 +44,16 @@ namespace Nustache.Core.Tests
             Assert.AreEqual("A template with Hello and True", result);            
         }
 
+        [Test]
+        public void HtmlEscape()
+        {
+            var template = new Template();
+            template.Load(new StringReader("A template with {{TestString}} and {{TestBool}}"));
+            var compiled = template.Compile<TestObject>(null);
+            var result = compiled(new TestObject { TestString = "<Hello> \"", TestBool = true });
+            Assert.AreEqual("A template with &lt;Hello&gt; &quot; and True", result);
+        }
+
         //[Test]
         //public void NestedSection()
         //{

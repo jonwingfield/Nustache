@@ -57,7 +57,14 @@ namespace Nustache.Core
         {
             var toStringExp = Expression.Call(context.CompiledGetter(_path), context.TargetType.GetMethod("ToString"));
 
-            return toStringExp;
+            if (_escaped)
+            {
+                return Expression.Call(null, typeof(Encoders).GetMethod("DefaultHtmlEncode"), toStringExp);
+            }
+            else
+            {
+                return toStringExp;
+            }
         }
     }
 }
