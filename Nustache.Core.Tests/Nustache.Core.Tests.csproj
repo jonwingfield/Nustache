@@ -59,6 +59,7 @@
     <Reference Include="System.XML" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Describe_Compound_Expressions.cs" />
     <Compile Include="Dynamic_Compilation.cs" />
     <Compile Include="Example_Trees.cs" />
     <Compile Include="Describe_Encoders.cs" />
