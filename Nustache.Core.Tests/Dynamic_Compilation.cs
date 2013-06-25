@@ -190,6 +190,36 @@ namespace Nustache.Core.Tests
             Assert.AreEqual("A template with  and False", result);     
         }
 
+        [Test]
+        public void Inverted_Sections()
+        {
+            var template = new Template();
+            template.Load(new StringReader("A template with {{#Sub}}Failed{{/Sub}}{{^Sub}}{{TestBool}}{{/Sub}} trailing"));
+            var compiled = template.Compile<TestObject>(null);
+            var result = compiled(new TestObject { Sub = null, TestBool = true });
+            Assert.AreEqual("A template with True trailing", result);     
+        }
+
+        [Test]
+        public void Nested_Inverted_Sections()
+        {
+            var template = new Template();
+            template.Load(new StringReader("{{^Sub.Sub.TestBool}}Not Here{{/Sub.Sub.TestBool}}"));
+            var compiled = template.Compile<TestObject>(null);
+            var result = compiled(new TestObject { Sub = new SubObject { Sub = new SubObject { TestBool = false } } });
+            Assert.AreEqual("Not Here", result);     
+        }
+
+        [Test]
+        public void Combined_Inverted_Sections()
+        {
+            var template = new Template();
+            template.Load(new StringReader("{{#Sub.Sub}}Here{{^TestBool}}, but is it?{{/TestBool}}{{/Sub.Sub}}"));
+            var compiled = template.Compile<TestObject>(null);
+            var result = compiled(new TestObject { Sub = new SubObject { Sub = new SubObject { TestBool = false } } });
+            Assert.AreEqual("Here, but is it?", result);     
+        }
+
         // TODOs:
         [Test]
         public void Missing_Properties()
