@@ -10,19 +10,25 @@ namespace Nustache.Core
 {
     public class CompileContext
     {
+        private int IncludeLimit = 255;
+        private int _includeLevel = 0;
+
         private readonly Type targetType;
         private readonly RenderContext renderContext;
         private readonly ParameterExpression dataParam;
         private readonly Stack<Expression> _targetObjectStack = new Stack<Expression>();
         private readonly Stack<Section> _sectionStack = new Stack<Section>();
+        private readonly TemplateLocator templateLocator;
 
         public CompileContext(Section section, Type targetType, ParameterExpression dataParam, TemplateLocator templateLocator)
         {
             this.targetType = targetType;
             this.renderContext = new RenderContext(section, null, null, templateLocator);
             this.dataParam = dataParam;
+            this.templateLocator = templateLocator;
 
             _targetObjectStack.Push(dataParam);
+            _sectionStack.Push(section);
         }
 
         public Type TargetType { get { return targetType; } }
@@ -54,13 +60,6 @@ namespace Nustache.Core
                 return innerExpression(value);
             }
             
-            //else if (value is string)
-            //{
-            //    if (!string.IsNullOrEmpty((string)value))
-            //    {
-            //        yield return value;
-            //    }
-            //}
             //else if (GenericIDictionaryUtil.IsInstanceOfGenericIDictionary(value))
             //{
             //    if ((value as IEnumerable).GetEnumerator().MoveNext())
@@ -140,6 +139,54 @@ namespace Nustache.Core
         {
             _sectionStack.Pop();
             _targetObjectStack.Pop();
+        }
+
+        internal Expression Include(string templateName)
+        {
+            if (_includeLevel >= IncludeLimit)
+            {
+                throw new NustacheException(
+                    string.Format("You have reached the include limit of {0}. Are you trying to render infinitely recursive templates or data?", IncludeLimit));
+            }
+
+            _includeLevel++;
+
+            Expression compiled = null;
+
+            TemplateDefinition templateDefinition = GetTemplateDefinition(templateName);
+
+            if (templateDefinition != null)
+            {
+                compiled = templateDefinition.Compile(this);
+            }
+            else if (templateLocator != null)
+            {
+                var template = templateLocator(templateName);
+
+                if (template != null)
+                {
+                    compiled = template.Compile(this);
+                }
+            }
+
+            _includeLevel--;
+
+            return compiled;
+        }
+
+        private TemplateDefinition GetTemplateDefinition(string name)
+        {
+            foreach (var section in _sectionStack)
+            {
+                var templateDefinition = section.GetTemplateDefinition(name);
+
+                if (templateDefinition != null)
+                {
+                    return templateDefinition;
+                }
+            }
+
+            return null;
         }
     }
 }

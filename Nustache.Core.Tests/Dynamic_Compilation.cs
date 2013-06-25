@@ -220,6 +220,54 @@ namespace Nustache.Core.Tests
             Assert.AreEqual("Here, but is it?", result);     
         }
 
+        [Test]
+        public void Partials()
+        {
+            var template = new Template();
+            template.Load(new StringReader("{{>text}} after partial"));
+            var compiled = template.Compile<TestObject>(name =>
+                name == "text" ? Template("{{TestString}} {{#Sub.TestBool}}I am in you{{/Sub.TestBool}}") : null);
+            var result = compiled(new TestObject { TestString = "a", Sub = new SubObject { TestBool = true } });
+            Assert.AreEqual("a I am in you after partial", result);   
+        }
+
+        [Test]
+        public void Internal_Templates_AKA_Inline_Partials()
+        {
+            var template = Template(
+@"{{<text}}in partial {{Sub.SubText}} {{/text}}
+
+{{>text}} after partial
+");
+
+            var compiled = template.Compile<TestObject>(null);
+
+            var result = compiled(new TestObject { Sub = new SubObject { SubText = "Byaaah" } });
+            Assert.AreEqual("in partial Byaaah  after partial", result.Replace("\r\n", ""));
+        }
+
+        [Test]
+        public void Missing_Partial()
+        {
+            var template = new Template();
+            template.Load(new StringReader("{{>text}} after partial"));
+            var compiled = template.Compile<TestObject>(name => null);
+            var result = compiled(null);
+            Assert.AreEqual(" after partial", result);   
+        }
+
+        private Func<T, string> Compiled<T>(string text) where T : class
+        {
+            return Template(text).Compile<T>(null);
+        }
+
+        private Template Template(string text)
+        {
+            var template = new Template();
+            template.Load(new StringReader(text));
+            return template;
+        }
+
         // TODOs:
         [Test]
         public void Missing_Properties()
@@ -232,29 +280,5 @@ namespace Nustache.Core.Tests
         {
 
         }
-
-        //[Test]
-        //public void NestedSection()
-        //{
-        //    var test = SectionTests.First(x => x["name"].ToString() == "Dotted Names - Truthy");
-
-        //    var template = new Template();
-        //    template.Load(new StringReader(test["template"].ToString()));
-        //    //template.Compile<DottedNamesTruthy>();
-        //    var rendered = Nustache.Core.Render.StringToString(test["template"].ToString(), new DottedNamesTruthy
-        //    {
-        //        a = new DottedNamesTruthy.Inner1
-        //        {
-        //            b = new DottedNamesTruthy.Inner2
-        //            {
-        //                c = true
-        //            }
-        //        }
-        //    });
-
-        //    Assert.AreEqual(test["expected"].ToString(), rendered);
-        //}
-
-
     }
 }

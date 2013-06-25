@@ -37,7 +37,7 @@ namespace Nustache.Core
 
         internal override Expression Compile(CompileContext context)
         {
-            throw new NotImplementedException();
+            return context.Include(_name);
         }
     }
 }
