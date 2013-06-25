@@ -117,7 +117,12 @@ namespace Nustache.Core
 
             foreach (var name in names)
             {
+                var parent = value;
                 value = ValueGetter.CompiledGetter(type, name, value);
+
+                if (value == null)
+                    throw new CompilationException("Could not find " + name, parent.Type.Name, 0, 0);
+
                 type = value.Type;
 
                 if (value == null)

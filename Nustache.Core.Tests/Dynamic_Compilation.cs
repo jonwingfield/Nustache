@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using NUnit.Framework;
 using System.IO;
+using Nustache.Core.Compilation;
 
 namespace Nustache.Core.Tests
 {
@@ -29,8 +30,7 @@ namespace Nustache.Core.Tests
         [Test]
         public void LiteralTemplate()
         {
-            var template = new Template();
-            template.Load(new StringReader("This is plain text"));
+            var template = Template("This is plain text");
             var compiled = template.Compile<DottedNamesTruthy>(null);
             Assert.AreEqual("This is plain text", compiled(null));
         }
@@ -38,8 +38,7 @@ namespace Nustache.Core.Tests
         [Test]
         public void LiteralTemplateWithComment()
         {
-            var template = new Template();
-            template.Load(new StringReader("This is {{!comment}}plain text"));
+            var template = Template("This is {{!comment}}plain text");
             var compiled = template.Compile<DottedNamesTruthy>(null);
             Assert.AreEqual("This is plain text", compiled(null));
         }
@@ -47,8 +46,7 @@ namespace Nustache.Core.Tests
         [Test]
         public void TemplateWithVariables()
         {
-            var template = new Template();
-            template.Load(new StringReader("A template with {{TestString}} and {{TestBool}}"));
+            var template = Template("A template with {{TestString}} and {{TestBool}}");
             var compiled = template.Compile<TestObject>(null);
             var result = compiled(new TestObject { TestString = "Hello", TestBool = true });
             Assert.AreEqual("A template with Hello and True", result);            
@@ -57,8 +55,7 @@ namespace Nustache.Core.Tests
         [Test]
         public void HtmlEscape()
         {
-            var template = new Template();
-            template.Load(new StringReader("A template with {{TestString}} and {{TestBool}}"));
+            var template = Template("A template with {{TestString}} and {{TestBool}}");
             var compiled = template.Compile<TestObject>(null);
             var result = compiled(new TestObject { TestString = "<Hello> \"", TestBool = true });
             Assert.AreEqual("A template with &lt;Hello&gt; &quot; and True", result);
@@ -67,8 +64,7 @@ namespace Nustache.Core.Tests
         [Test]
         public void NestedTemplates()
         {
-            var template = new Template();
-            template.Load(new StringReader("A template with {{#Sub}} {{SubText}} here {{/Sub}}"));
+            var template = Template("A template with {{#Sub}} {{SubText}} here {{/Sub}}");
             var compiled = template.Compile<TestObject>(null);
             var result = compiled(new TestObject { Sub = new SubObject { SubText = "Blah" } });
             Assert.AreEqual("A template with  Blah here ", result);
@@ -77,8 +73,7 @@ namespace Nustache.Core.Tests
         [Test]
         public void Null_Nested_Template()
         {
-            var template = new Template();
-            template.Load(new StringReader("A template with {{#Sub}} {{SubText}} here {{/Sub}}"));
+            var template = Template("A template with {{#Sub}} {{SubText}} here {{/Sub}}");
             var compiled = template.Compile<TestObject>(null);
             var result = compiled(new TestObject { Sub = null });
             Assert.AreEqual("A template with ", result);
@@ -87,8 +82,7 @@ namespace Nustache.Core.Tests
         [Test]
         public void Dotted_Variable_Names()
         {
-            var template = new Template();
-            template.Load(new StringReader("A template with {{Sub.SubText}} here"));
+            var template = Template("A template with {{Sub.SubText}} here");
             var compiled = template.Compile<TestObject>(null);
             var result = compiled(new TestObject { Sub = new SubObject { SubText = "Blah" } });
             Assert.AreEqual("A template with Blah here", result);
@@ -97,8 +91,7 @@ namespace Nustache.Core.Tests
         [Test]
         public void Boolean_Sections()
         {
-            var template = new Template();
-            template.Load(new StringReader("A template with {{#TestBool}}data here{{/TestBool}}"));
+            var template = Template("A template with {{#TestBool}}data here{{/TestBool}}");
             var compiled = template.Compile<TestObject>(null);
             var result = compiled(new TestObject { TestBool = false });
             Assert.AreEqual("A template with ", result);
@@ -107,8 +100,7 @@ namespace Nustache.Core.Tests
         [Test]
         public void Boolean_Nested_Sections()
         {
-            var template = new Template();
-            template.Load(new StringReader("A template with {{#Sub.TestBool}}data here{{/Sub.TestBool}}"));
+            var template = Template("A template with {{#Sub.TestBool}}data here{{/Sub.TestBool}}");
             var compiled = template.Compile<TestObject>(null);
             var result = compiled(new TestObject { Sub = new SubObject { TestBool = false } });
             Assert.AreEqual("A template with ", result);
@@ -117,8 +109,7 @@ namespace Nustache.Core.Tests
         [Test]
         public void Enumerable_Sections()
         {
-            var template = new Template();
-            template.Load(new StringReader("A template with{{#Items}} {{SubText}} {{/Items}}"));
+            var template = Template("A template with{{#Items}} {{SubText}} {{/Items}}");
             var compiled = template.Compile<TestObject>(null);
             var result = compiled(new TestObject
             {
@@ -135,8 +126,7 @@ namespace Nustache.Core.Tests
         [Test]
         public void Null_Enumerable_Values()
         {
-            var template = new Template();
-            template.Load(new StringReader("A template with{{#Items}} {{SubText}} {{/Items}}"));
+            var template = Template("A template with{{#Items}} {{SubText}} {{/Items}}");
             var compiled = template.Compile<TestObject>(null);
             var result = compiled(new TestObject { Items = null });
             Assert.AreEqual("A template with", result);
@@ -145,8 +135,7 @@ namespace Nustache.Core.Tests
         [Test]
         public void Multiple_Levels_of_Enumerable_Sections()
         {
-            var template = new Template();
-            template.Load(new StringReader(
+            var template = Template(
                 @"A template with
 
 {{#Items}} 
@@ -159,7 +148,7 @@ namespace Nustache.Core.Tests
     {{/Sub}}
 {{/Sub}} 
 
-{{/Items}}"));
+{{/Items}}");
             var compiled = template.Compile<TestObject>(null);
             var result = compiled(new TestObject
             {
@@ -183,8 +172,7 @@ namespace Nustache.Core.Tests
         [Test]
         public void Null_Values()
         {
-            var template = new Template();
-            template.Load(new StringReader("A template with {{TestString}} and {{TestBool}}"));
+            var template = Template("A template with {{TestString}} and {{TestBool}}");
             var compiled = template.Compile<TestObject>(null);
             var result = compiled(new TestObject { TestString = null });
             Assert.AreEqual("A template with  and False", result);     
@@ -193,8 +181,7 @@ namespace Nustache.Core.Tests
         [Test]
         public void Inverted_Sections()
         {
-            var template = new Template();
-            template.Load(new StringReader("A template with {{#Sub}}Failed{{/Sub}}{{^Sub}}{{TestBool}}{{/Sub}} trailing"));
+            var template = Template("A template with {{#Sub}}Failed{{/Sub}}{{^Sub}}{{TestBool}}{{/Sub}} trailing");
             var compiled = template.Compile<TestObject>(null);
             var result = compiled(new TestObject { Sub = null, TestBool = true });
             Assert.AreEqual("A template with True trailing", result);     
@@ -203,8 +190,7 @@ namespace Nustache.Core.Tests
         [Test]
         public void Nested_Inverted_Sections()
         {
-            var template = new Template();
-            template.Load(new StringReader("{{^Sub.Sub.TestBool}}Not Here{{/Sub.Sub.TestBool}}"));
+            var template = Template("{{^Sub.Sub.TestBool}}Not Here{{/Sub.Sub.TestBool}}");
             var compiled = template.Compile<TestObject>(null);
             var result = compiled(new TestObject { Sub = new SubObject { Sub = new SubObject { TestBool = false } } });
             Assert.AreEqual("Not Here", result);     
@@ -213,8 +199,7 @@ namespace Nustache.Core.Tests
         [Test]
         public void Combined_Inverted_Sections()
         {
-            var template = new Template();
-            template.Load(new StringReader("{{#Sub.Sub}}Here{{^TestBool}}, but is it?{{/TestBool}}{{/Sub.Sub}}"));
+            var template = Template("{{#Sub.Sub}}Here{{^TestBool}}, but is it?{{/TestBool}}{{/Sub.Sub}}");
             var compiled = template.Compile<TestObject>(null);
             var result = compiled(new TestObject { Sub = new SubObject { Sub = new SubObject { TestBool = false } } });
             Assert.AreEqual("Here, but is it?", result);     
@@ -223,8 +208,7 @@ namespace Nustache.Core.Tests
         [Test]
         public void Partials()
         {
-            var template = new Template();
-            template.Load(new StringReader("{{>text}} after partial"));
+            var template = Template("{{>text}} after partial");
             var compiled = template.Compile<TestObject>(name =>
                 name == "text" ? Template("{{TestString}} {{#Sub.TestBool}}I am in you{{/Sub.TestBool}}") : null);
             var result = compiled(new TestObject { TestString = "a", Sub = new SubObject { TestBool = true } });
@@ -249,8 +233,7 @@ namespace Nustache.Core.Tests
         [Test]
         public void Missing_Partial()
         {
-            var template = new Template();
-            template.Load(new StringReader("{{>text}} after partial"));
+            var template = Template("{{>text}} after partial");
             var compiled = template.Compile<TestObject>(name => null);
             var result = compiled(null);
             Assert.AreEqual(" after partial", result);   
@@ -268,17 +251,22 @@ namespace Nustache.Core.Tests
             return template;
         }
 
-        // TODOs:
-        [Test]
+        [Test, ExpectedException(ExpectedException=typeof(CompilationException), 
+            ExpectedMessage="Could not find TestString1\nOn object: TestObject")]
         public void Missing_Properties()
         {
-
+            var template = Template("A template with {{TestString1}} and {{TestBool}}");
+            var compiled = template.Compile<TestObject>(null);
+            compiled(new TestObject { TestString = "Hello", TestBool = true });
         }
 
-        [Test]
+        [Test, ExpectedException(ExpectedException = typeof(CompilationException),
+            ExpectedMessage = "Could not find Missing\nOn object: SubObject")]
         public void Missing_SubProperties()
         {
-
+            var template = Template("A template with {{Sub.Missing}}");
+            var compiled = template.Compile<TestObject>(null);
+            compiled(new TestObject { Sub = new SubObject { SubText = "Blah" } });
         }
     }
 }
