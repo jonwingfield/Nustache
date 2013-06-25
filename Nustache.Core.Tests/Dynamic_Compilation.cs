@@ -32,7 +32,7 @@ namespace Nustache.Core.Tests
         public void LiteralTemplate()
         {
             var template = Template("This is plain text");
-            var compiled = template.Compile<DottedNamesTruthy>(null);
+            var compiled = template.Compile<object>(null);
             Assert.AreEqual("This is plain text", compiled(null));
         }
 
@@ -40,7 +40,7 @@ namespace Nustache.Core.Tests
         public void LiteralTemplateWithComment()
         {
             var template = Template("This is {{!comment}}plain text");
-            var compiled = template.Compile<DottedNamesTruthy>(null);
+            var compiled = template.Compile<object>(null);
             Assert.AreEqual("This is plain text", compiled(null));
         }
 

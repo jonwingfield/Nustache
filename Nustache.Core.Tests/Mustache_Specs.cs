@@ -9,21 +9,6 @@ using Newtonsoft.Json;
 
 namespace Nustache.Core.Tests
 {
-    public class DottedNamesTruthy
-    {
-        public Inner1 a { get; set; }
-
-        public class Inner1
-        {
-            public Inner2 b { get; set; }
-        }
-
-        public class Inner2
-        {
-            public bool c { get; set; }
-        }
-    }
-
     [TestFixture]
     public class Mustache_Specs
     {
