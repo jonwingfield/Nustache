@@ -14,6 +14,7 @@ namespace Nustache.Core.Tests
         public bool TestBool { get; set; }
         public SubObject Sub { get; set; }
         public List<SubObject> Items { get; set; }
+        public string[] Strings { get; set; }
     }
 
     public class SubObject
@@ -239,16 +240,17 @@ namespace Nustache.Core.Tests
             Assert.AreEqual(" after partial", result);   
         }
 
-        private Func<T, string> Compiled<T>(string text) where T : class
+        [Test]
+        public void Implicit_Iterator()
         {
-            return Template(text).Compile<T>(null);
-        }
+            var template = Template("A template with{{#Strings}} {{.}} {{/Strings}}");
+            var compiled = template.Compile<TestObject>(null);
+            var result = compiled(new TestObject
+            {
+                Strings = new [] { "a", "b", "c" },
+            });
+            Assert.AreEqual("A template with a  b  c ", result);
 
-        private Template Template(string text)
-        {
-            var template = new Template();
-            template.Load(new StringReader(text));
-            return template;
         }
 
         [Test, ExpectedException(ExpectedException=typeof(CompilationException), 
@@ -267,6 +269,18 @@ namespace Nustache.Core.Tests
             var template = Template("A template with {{Sub.Missing}}");
             var compiled = template.Compile<TestObject>(null);
             compiled(new TestObject { Sub = new SubObject { SubText = "Blah" } });
+        }
+
+        private Func<T, string> Compiled<T>(string text) where T : class
+        {
+            return Template(text).Compile<T>(null);
+        }
+
+        private Template Template(string text)
+        {
+            var template = new Template();
+            template.Load(new StringReader(text));
+            return template;
         }
     }
 }

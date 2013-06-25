@@ -112,8 +112,13 @@ namespace Nustache.Core
                 return value;
             }
 
-            var names = path.Split('.');
             value = _targetObjectStack.Peek();
+
+            if (path == ".")
+                return Expression.Call(value,
+                    value.Type.GetMethod("ToString", new Type[0]));
+
+            var names = path.Split('.');
 
             foreach (var name in names)
             {
@@ -124,11 +129,6 @@ namespace Nustache.Core
                     throw new CompilationException("Could not find " + name, parent.Type.Name, 0, 0);
 
                 type = value.Type;
-
-                if (value == null)
-                {
-                    break;
-                }
             }
 
             return value;
