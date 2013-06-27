@@ -63,13 +63,34 @@ namespace Nustache.Core.Tests.Mustache_Spec
             rendered = Render.StringToString(test.Template, test.StronglyTypedExample, testDataTemplateLocator);
             Assert.AreEqual(test.Expected, rendered, "Strongly typed rendering failed for " + test.Description);
 
-            StringWriter sw = new StringWriter();
-            
             var templ = new Template();
             templ.Load(new StringReader(test.Template));
-            var compiledTemplate = templ.Compile(test.StronglyTypedExample.GetType(), testDataTemplateLocator);
-            rendered = compiledTemplate(test.StronglyTypedExample);
-            Assert.AreEqual(test.Expected, rendered, "Compiled Template rendering failed for " + test.Description);
+
+            if (!test.Name.ToLower().Contains("context miss") &&
+                !test.Name.ToLower().Contains("broken chain"))
+            {
+                var compiledTemplate = templ.Compile(
+                    test.StronglyTypedExample != null ? test.StronglyTypedExample.GetType() : typeof(object),
+                    testDataTemplateLocator);
+                rendered = compiledTemplate(test.StronglyTypedExample);
+                Assert.AreEqual(test.Expected, rendered, "Compiled Template rendering failed for " + test.Description);
+            }
+            else
+            {
+                bool gotException = false;
+                try
+                {
+                    var compiledTemplate = templ.Compile(
+                        test.StronglyTypedExample != null ? test.StronglyTypedExample.GetType() : typeof(object),
+                        testDataTemplateLocator);                    
+                }
+                catch (Compilation.CompilationException)
+                {
+                    gotException = true;
+                }
+
+                Assert.IsTrue(gotException, "Expected test to throw a compilation exception for an invalid template");
+            }
         }
 
         private static MustacheSpec.MustacheTest[] GetSpecs(string name)
