@@ -57,6 +57,10 @@
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Extensions" />
     <Reference Include="System.XML" />
+    <Reference Include="Xamasoft.JsonClassGenerator, Version=1.5.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\JsonCsClassGenerator\JsonCSharpClassGeneratorLib\bin\Release\Xamasoft.JsonClassGenerator.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Describe_Compound_Expression_Enumerator.cs" />
@@ -64,7 +68,15 @@
     <Compile Include="Example_Trees.cs" />
     <Compile Include="Describe_Encoders.cs" />
     <Compile Include="Describe_Lambda.cs" />
-    <Compile Include="Mustache_Specs.cs" />
+    <Compile Include="Mustache_Spec\examples\delimiters.cs" />
+    <Compile Include="Mustache_Spec\examples\interpolation.cs" />
+    <Compile Include="Mustache_Spec\examples\inverted.cs" />
+    <Compile Include="Mustache_Spec\examples\JsonClassHelper.cs" />
+    <Compile Include="Mustache_Spec\examples\partials.cs" />
+    <Compile Include="Mustache_Spec\examples\sections.cs" />
+    <Compile Include="Mustache_Spec\Generate_Classes_from_JSON.cs" />
+    <Compile Include="Mustache_Spec\MustacheSpec.cs" />
+    <Compile Include="Mustache_Spec\Official_Specs.cs" />
     <Compile Include="PartExtensions.cs" />
     <Compile Include="Describe_FileSystemTemplateLocator.cs" />
     <Compile Include="FileSystemTestFixture.cs" />
@@ -110,6 +122,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Mustache_Spec\examples\Generated Code!!.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
