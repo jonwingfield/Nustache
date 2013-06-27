@@ -37,6 +37,7 @@ namespace Nustache.Core.Tests.Mustache_Spec
         [Test, TestCaseSource("PartialsTests")]
         public void Partials(MustacheSpec.MustacheTest test) { RunMustacheSpecs(test); }
 
+        // uncomment this to regenerate the specs from the mustache spec submodule
         //[Test]
         public void Generate()
         {
@@ -61,6 +62,14 @@ namespace Nustache.Core.Tests.Mustache_Spec
 
             rendered = Render.StringToString(test.Template, test.StronglyTypedExample, testDataTemplateLocator);
             Assert.AreEqual(test.Expected, rendered, "Strongly typed rendering failed for " + test.Description);
+
+            StringWriter sw = new StringWriter();
+            
+            var templ = new Template();
+            templ.Load(new StringReader(test.Template));
+            var compiledTemplate = templ.Compile(test.StronglyTypedExample.GetType(), testDataTemplateLocator);
+            rendered = compiledTemplate(test.StronglyTypedExample);
+            Assert.AreEqual(test.Expected, rendered, "Compiled Template rendering failed for " + test.Description);
         }
 
         private static MustacheSpec.MustacheTest[] GetSpecs(string name)

@@ -15,16 +15,14 @@ namespace Nustache.Core
 
         private readonly Type targetType;
         private readonly RenderContext renderContext;
-        private readonly ParameterExpression dataParam;
         private readonly Stack<Expression> _targetObjectStack = new Stack<Expression>();
         private readonly Stack<Section> _sectionStack = new Stack<Section>();
         private readonly TemplateLocator templateLocator;
 
-        public CompileContext(Section section, Type targetType, ParameterExpression dataParam, TemplateLocator templateLocator)
+        public CompileContext(Section section, Type targetType, Expression dataParam, TemplateLocator templateLocator)
         {
             this.targetType = targetType;
             this.renderContext = new RenderContext(section, null, null, templateLocator);
-            this.dataParam = dataParam;
             this.templateLocator = templateLocator;
 
             _targetObjectStack.Push(dataParam);

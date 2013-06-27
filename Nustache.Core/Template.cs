@@ -48,6 +48,18 @@ namespace Nustache.Core
             return (Expression.Lambda<Func<T, string>>(expression, param)).Compile();
         }
 
+        public Func<object, string> Compile(Type compileFor, TemplateLocator templateLocator)
+        {
+            var param = Expression.Parameter(typeof(object), "data");
+
+            var context = new CompileContext(this, compileFor, 
+                Expression.Convert(param, compileFor), templateLocator);
+
+            var expression = Compile(context);
+            Console.WriteLine(expression.ToString());
+            return (Expression.Lambda<Func<object, string>>(expression, param)).Compile();
+        }
+
         /// <summary>
         /// Renders the template.
         /// </summary>
