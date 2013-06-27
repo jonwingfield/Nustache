@@ -15,6 +15,7 @@ namespace Nustache.Core.Tests
         public SubObject Sub { get; set; }
         public List<SubObject> Items { get; set; }
         public string[] Strings { get; set; }
+        public string OuterOnly { get; set; }
     }
 
     public class SubObject
@@ -250,7 +251,15 @@ namespace Nustache.Core.Tests
                 Strings = new [] { "a", "b", "c" },
             });
             Assert.AreEqual("A template with a  b  c ", result);
+        }
 
+        [Test]
+        public void Nested_Sections_have_outer_context_available()
+        {
+            var template = Template("A template with {{#Sub}} {{OuterOnly}} here {{/Sub}}");
+            var compiled = template.Compile<TestObject>(null);
+            var result = compiled(new TestObject { Sub = new SubObject(), OuterOnly = "Blah" });
+            Assert.AreEqual("A template with  Blah here ", result);
         }
 
         [Test, ExpectedException(ExpectedException=typeof(CompilationException), 
@@ -260,15 +269,6 @@ namespace Nustache.Core.Tests
             var template = Template("A template with {{TestString1}} and {{TestBool}}");
             var compiled = template.Compile<TestObject>(null);
             compiled(new TestObject { TestString = "Hello", TestBool = true });
-        }
-
-        [Test, ExpectedException(ExpectedException = typeof(CompilationException),
-            ExpectedMessage = "Could not find Missing\nOn object: SubObject")]
-        public void Missing_SubProperties()
-        {
-            var template = Template("A template with {{Sub.Missing}}");
-            var compiled = template.Compile<TestObject>(null);
-            compiled(new TestObject { Sub = new SubObject { SubText = "Blah" } });
         }
 
         private Func<T, string> Compiled<T>(string text) where T : class

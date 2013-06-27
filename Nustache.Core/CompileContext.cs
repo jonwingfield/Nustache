@@ -92,25 +92,27 @@ namespace Nustache.Core
             {
                 if (targetObject != null)
                 {
-                    var value = GetExpressionFromPath(targetObject.Type, path);
+                    var value = GetExpressionFromPath(targetObject.Type, path, targetObject);
 
-                    return value;
+                    if (value != null)
+                        return value;
                 }
             }
 
-            return null;
+            throw new CompilationException("Could not find " + path, 
+                String.Join(", ", _targetObjectStack.Select(obj => obj.Type.Name)), 0, 0);
         }
 
-        private Expression GetExpressionFromPath(Type type, string path)
+        private Expression GetExpressionFromPath(Type type, string path, Expression targetObject)
         {
-            var value = ValueGetter.CompiledGetter(type, path, _targetObjectStack.Peek());
+            var value = ValueGetter.CompiledGetter(type, path, targetObject);
 
             if (value != null)
             {
                 return value;
             }
 
-            value = _targetObjectStack.Peek();
+            value = targetObject;
 
             if (path == ".")
                 return Expression.Call(value,
@@ -124,7 +126,7 @@ namespace Nustache.Core
                 value = ValueGetter.CompiledGetter(type, name, value);
 
                 if (value == null)
-                    throw new CompilationException("Could not find " + name, parent.Type.Name, 0, 0);
+                    return null;
 
                 type = value.Type;
             }
