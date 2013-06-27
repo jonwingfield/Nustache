@@ -67,7 +67,8 @@ namespace Nustache.Core.Tests.Mustache_Spec
             templ.Load(new StringReader(test.Template));
 
             if (!test.Name.ToLower().Contains("context miss") &&
-                !test.Name.ToLower().Contains("broken chain"))
+                !test.Name.ToLower().Contains("broken chain") &&
+                !(test.SpecName == "inverted" && (test.Name == "List" || test.Name == "Context")))
             {
                 var compiledTemplate = templ.Compile(
                     test.StronglyTypedExample != null ? test.StronglyTypedExample.GetType() : typeof(object),
@@ -82,7 +83,7 @@ namespace Nustache.Core.Tests.Mustache_Spec
                 {
                     var compiledTemplate = templ.Compile(
                         test.StronglyTypedExample != null ? test.StronglyTypedExample.GetType() : typeof(object),
-                        testDataTemplateLocator);                    
+                        testDataTemplateLocator);
                 }
                 catch (Compilation.CompilationException)
                 {

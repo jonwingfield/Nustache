@@ -181,7 +181,7 @@ namespace Nustache.Core.Tests
         }
 
         [Test]
-        public void Inverted_Sections()
+        public void Inverted_Sections_Keep_Outer_Context()
         {
             var template = Template("A template with {{#Sub}}Failed{{/Sub}}{{^Sub}}{{TestBool}}{{/Sub}} trailing");
             var compiled = template.Compile<TestObject>(null);
@@ -192,10 +192,10 @@ namespace Nustache.Core.Tests
         [Test]
         public void Nested_Inverted_Sections()
         {
-            var template = Template("{{^Sub.Sub.TestBool}}Not Here{{/Sub.Sub.TestBool}}");
+            var template = Template("Value is {{^Sub.Sub.TestBool}}Here{{/Sub.Sub.TestBool}}");
             var compiled = template.Compile<TestObject>(null);
             var result = compiled(new TestObject { Sub = new SubObject { Sub = new SubObject { TestBool = false } } });
-            Assert.AreEqual("Not Here", result);     
+            Assert.AreEqual("Value is Here", result);     
         }
 
         [Test]
@@ -203,7 +203,8 @@ namespace Nustache.Core.Tests
         {
             var template = Template("{{#Sub.Sub}}Here{{^TestBool}}, but is it?{{/TestBool}}{{/Sub.Sub}}");
             var compiled = template.Compile<TestObject>(null);
-            var result = compiled(new TestObject { Sub = new SubObject { Sub = new SubObject { TestBool = false } } });
+            var data = new TestObject { Sub = new SubObject { Sub = new SubObject { TestBool = false } } };
+            var result = compiled(data);
             Assert.AreEqual("Here, but is it?", result);     
         }
 

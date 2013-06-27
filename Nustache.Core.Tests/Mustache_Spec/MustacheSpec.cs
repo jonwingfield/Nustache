@@ -78,6 +78,7 @@ namespace Nustache.Core.Tests.Mustache_Spec
 
             public MustacheTest(string specName, JToken test, JObject stronglyTypedExamples)
             {
+                this.SpecName = specName;
                 this.SanitizedName = Sanitize(test["name"].ToString());
                 this.test = test;
                 this.Template = StripReservedWords(test["template"].ToString());
@@ -119,6 +120,8 @@ namespace Nustache.Core.Tests.Mustache_Spec
             {
                 return Name;
             }
+
+            public string SpecName { get; set; }
         }
     }
 }

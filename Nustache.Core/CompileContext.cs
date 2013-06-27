@@ -36,26 +36,50 @@ namespace Nustache.Core
             return GetInnerExpression(path);
         }
 
-        internal Expression GetInnerExpressions(string path, Func<Expression, Expression> innerExpression)
+        internal Expression GetInnerExpressions(string path, Func<Expression, Expression> innerExpression, bool invert = false)
         {
             var value = GetInnerExpression(path);
 
             if (value.Type == typeof(bool))
             {
                 return Expression.Condition(
-                    value,
+                    Expression.Equal(value, Expression.Constant(!invert)),
                     innerExpression(value),
                     Expression.Constant(""));
             }
             else if (value.Type.GetInterface("IEnumerable") != null)
             {
-                return CompoundExpression.Enumerator(
-                    itemCallback: innerExpression, 
-                    enumerable: value);
+                if (invert)
+                {
+                    var enumerator = Expression.Call(
+                        value,
+                        value.Type.GetInterface("IEnumerable").GetMethod("GetEnumerator"));
+
+                    return Expression.Condition(
+                        Expression.Call(enumerator, enumerator.Type.GetMethod("MoveNext")),
+                        Expression.Constant(""),
+                        innerExpression(value));
+                }
+                else
+                {
+                    return CompoundExpression.Enumerator(
+                        itemCallback: innerExpression,
+                        enumerable: value);
+                }
             }
             else
             {
-                return innerExpression(value);
+                if (invert && !value.Type.IsValueType)
+                {
+                    return Expression.Condition(
+                        Expression.Equal(value, Expression.Constant(null)),
+                        innerExpression(value),
+                        Expression.Constant(""));
+                }
+                else
+                {
+                    return innerExpression(value);
+                }
             }
             
             //else if (GenericIDictionaryUtil.IsInstanceOfGenericIDictionary(value))
