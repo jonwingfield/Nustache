@@ -113,7 +113,7 @@ namespace Nustache.Core
 
         public override Expression CompiledGetter(Type targetType, Expression dataParameter)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
     }
 
@@ -135,7 +135,7 @@ namespace Nustache.Core
 
         public override Expression CompiledGetter(Type targetType, Expression dataParameter)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
     }
 
@@ -157,7 +157,7 @@ namespace Nustache.Core
 
         public override Expression CompiledGetter(Type targetType, Expression dataParameter)
         {
-            throw new NotImplementedException();
+            return Expression.Call(dataParameter, _methodInfo);
         }
     }
 
@@ -201,7 +201,7 @@ namespace Nustache.Core
 
         public override Expression CompiledGetter(Type targetType, Expression dataParameter)
         {
-            throw new NotImplementedException();
+            return Expression.Field(dataParameter, _fieldInfo);
         }
     }
 
@@ -223,7 +223,7 @@ namespace Nustache.Core
 
         public override Expression CompiledGetter(Type targetType, Expression dataParameter)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
     }
 
@@ -232,12 +232,14 @@ namespace Nustache.Core
         private readonly object _target;
         private readonly string _key;
         private readonly MethodInfo _getMethod;
+        private readonly Type _dictionaryType;
 
         internal GenericDictionaryValueGetter(object target, string key, Type dictionaryType)
         {
             _target = target;
             _key = key;
             _getMethod = dictionaryType.GetMethod("get_Item");
+            _dictionaryType = dictionaryType;
         }
 
         public override object GetValue()
@@ -247,7 +249,13 @@ namespace Nustache.Core
 
         public override Expression CompiledGetter(Type targetType, Expression dataParameter)
         {
-            throw new NotImplementedException();
+            var containsKeyMethod = _dictionaryType.GetMethod("ContainsKey");
+
+            return
+                Expression.Condition(
+                    Expression.Call(dataParameter, containsKeyMethod, Expression.Constant(_key)),
+                    Expression.Call(dataParameter, _getMethod, Expression.Constant(_key)),
+                    Expression.Default(_getMethod.ReturnType));
         }
     }
 
@@ -260,7 +268,7 @@ namespace Nustache.Core
 
         public override Expression CompiledGetter(Type targetType, Expression dataParameter)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
     }
 }

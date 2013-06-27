@@ -65,6 +65,7 @@
   <ItemGroup>
     <Compile Include="Describe_Compound_Expression_Enumerator.cs" />
     <Compile Include="Dynamic_Compilation.cs" />
+    <Compile Include="Dynamic_Compilation_Data_Types.cs" />
     <Compile Include="Example_Trees.cs" />
     <Compile Include="Describe_Encoders.cs" />
     <Compile Include="Describe_Lambda.cs" />

@@ -167,6 +167,16 @@ namespace Nustache.Core
 
         public override ValueGetter GetValueGetter(Type targetType, string name)
         {
+            MemberInfo[] methods = targetType.GetMember(name, MemberTypes.Method, DefaultBindingFlags);
+
+            foreach (MethodInfo method in methods)
+            {
+                if (MethodCanGetValue(method))
+                {
+                    return new MethodInfoValueGetter(null, method);
+                }
+            }
+
             return null;
         }
     }
@@ -219,6 +229,13 @@ namespace Nustache.Core
 
         public override ValueGetter GetValueGetter(Type targetType, string name)
         {
+            FieldInfo field = targetType.GetField(name, DefaultBindingFlags);
+
+            if (field != null)
+            {
+                return new FieldInfoValueGetter(null, field);
+            }
+
             return null;
         }
     }
@@ -250,19 +267,7 @@ namespace Nustache.Core
     {
         public override ValueGetter GetValueGetter(object target, string name)
         {
-            Type dictionaryType = null;
-
-            foreach (var interfaceType in target.GetType().GetInterfaces())
-            {
-                if (interfaceType.IsGenericType &&
-                    interfaceType.GetGenericTypeDefinition() == typeof(IDictionary<,>) &&
-                    interfaceType.GetGenericArguments()[0] == typeof(string))
-                {
-                    dictionaryType = interfaceType;
-
-                    break;
-                }
-            }
+            Type dictionaryType = GetSupportedInterfaceType(target.GetType());
 
             if (dictionaryType != null)
             {
@@ -279,7 +284,33 @@ namespace Nustache.Core
 
         public override ValueGetter GetValueGetter(Type targetType, string name)
         {
+            Type dictionaryType = GetSupportedInterfaceType(targetType);
+
+            if (dictionaryType != null)
+            {
+                return new GenericDictionaryValueGetter(null, name, dictionaryType);
+            }
+
             return null;
+        }
+
+        private static Type GetSupportedInterfaceType(Type targetType)
+        {
+            Type dictionaryType = null;
+
+            foreach (var interfaceType in targetType.GetInterfaces())
+            {
+                if (interfaceType.IsGenericType &&
+                    interfaceType.GetGenericTypeDefinition() == typeof(IDictionary<,>) &&
+                    interfaceType.GetGenericArguments()[0] == typeof(string))
+                {
+                    dictionaryType = interfaceType;
+
+                    break;
+                }
+            }
+
+            return dictionaryType;
         }
     }
 }
