@@ -27,10 +27,10 @@ namespace Nustache.Core.Tests
     }
 
     [TestFixture]
-    public class Dynamic_Compilation
+    public class Compiled_Templates_Support
     {
         [Test]
-        public void LiteralTemplate()
+        public void Literals()
         {
             var template = Template("This is plain text");
             var compiled = template.Compile<object>(null);
@@ -38,7 +38,7 @@ namespace Nustache.Core.Tests
         }
 
         [Test]
-        public void LiteralTemplateWithComment()
+        public void Comments()
         {
             var template = Template("This is {{!comment}}plain text");
             var compiled = template.Compile<object>(null);
@@ -46,7 +46,7 @@ namespace Nustache.Core.Tests
         }
 
         [Test]
-        public void TemplateWithVariables()
+        public void Variables()
         {
             var template = Template("A template with {{TestString}} and {{TestBool}}");
             var compiled = template.Compile<TestObject>(null);
@@ -55,7 +55,7 @@ namespace Nustache.Core.Tests
         }
 
         [Test]
-        public void HtmlEscape()
+        public void Html_Escaping()
         {
             var template = Template("A template with {{TestString}} and {{TestBool}}");
             var compiled = template.Compile<TestObject>(null);
@@ -64,7 +64,7 @@ namespace Nustache.Core.Tests
         }
 
         [Test]
-        public void NestedTemplates()
+        public void Nested_Templates()
         {
             var template = Template("A template with {{#Sub}} {{SubText}} here {{/Sub}}");
             var compiled = template.Compile<TestObject>(null);
@@ -181,7 +181,7 @@ namespace Nustache.Core.Tests
         }
 
         [Test]
-        public void Inverted_Sections_Keep_Outer_Context()
+        public void Inverted_Sections_that_Keep_Outer_Context()
         {
             var template = Template("A template with {{#Sub}}Failed{{/Sub}}{{^Sub}}{{TestBool}}{{/Sub}} trailing");
             var compiled = template.Compile<TestObject>(null);
@@ -234,7 +234,7 @@ namespace Nustache.Core.Tests
         }
 
         [Test]
-        public void Missing_Partial()
+        public void Missing_Partials()
         {
             var template = Template("{{>text}} after partial");
             var compiled = template.Compile<TestObject>(name => null);
@@ -243,7 +243,7 @@ namespace Nustache.Core.Tests
         }
 
         [Test]
-        public void Implicit_Iterator()
+        public void Implicit_Iterators()
         {
             var template = Template("A template with{{#Strings}} {{.}} {{/Strings}}");
             var compiled = template.Compile<TestObject>(null);
@@ -255,7 +255,7 @@ namespace Nustache.Core.Tests
         }
 
         [Test]
-        public void Nested_Sections_have_outer_context_available()
+        public void Nested_Sections_with_outer_context_available()
         {
             var template = Template("A template with {{#Sub}} {{OuterOnly}} here {{/Sub}}");
             var compiled = template.Compile<TestObject>(null);

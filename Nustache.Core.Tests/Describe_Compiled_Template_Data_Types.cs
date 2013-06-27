@@ -8,7 +8,7 @@ using System.IO;
 namespace Nustache.Core.Tests
 {
     [TestFixture]
-    public class Dynamic_Compilation_Data_Types
+    public class Describe_Compiled_Template_Data_Types
     {
         class TypeTestClass
         {
@@ -27,7 +27,7 @@ namespace Nustache.Core.Tests
         }
 
         [Test]
-        public void Methods()
+        public void It_supports_methods()
         {
             var template = Template("A template with {{Method}}");
             var compiled = template.Compile<TypeTestClass>(null);
@@ -36,7 +36,7 @@ namespace Nustache.Core.Tests
         }
 
         [Test]
-        public void Fields()
+        public void It_supports_Fields()
         {
             var template = Template("Showing {{fieldName}} values");
             var compiled = template.Compile<TypeTestClass>(null);
@@ -45,7 +45,7 @@ namespace Nustache.Core.Tests
         }
 
         [Test]
-        public void GenericDictionaries()
+        public void It_supports_Generic_Dictionaries()
         {
             var template = Template("Showing {{ADictionary.key1}} values and {{ADictionary.value1}}");
             var compiled = template.Compile<TypeTestClass>(null);
@@ -61,13 +61,13 @@ namespace Nustache.Core.Tests
         }
 
         [Test]
-        public void EnumeratingGenericDictionaries()
+        public void It_supports_Enumerating_Generic_Dictionaries()
         {
             Assert.Inconclusive("Not implemented");
         }
 
         [Test]
-        public void GenericDictionariesAsSections()
+        public void It_supports_Generic_Dictionaries_As_Sections()
         {
             var template = Template("Showing {{#ADictionary}} {{key1}} {{value1}}{{/ADictionary}}");
 
@@ -86,7 +86,7 @@ namespace Nustache.Core.Tests
         }
 
         [Test]
-        public void DictionariesWithComplexTypesAsValues()
+        public void It_supports_Dictionaries_with_Complex_Types_as_Values()
         {
             var template = Template("Showing {{ComplexDictionary.key1.TestString}}");
             var compiled = template.Compile<TypeTestClass>(null);
@@ -101,7 +101,7 @@ namespace Nustache.Core.Tests
         }
 
         [Test]
-        public void GenericDictionary_KeyNotFound()
+        public void It_supports_Generic_Dictionaries_with_missing_keys()
         {
             var template = Template("Showing {{ADictionary.key2}} values");
             var compiled = template.Compile<TypeTestClass>(null);
@@ -120,7 +120,7 @@ namespace Nustache.Core.Tests
         }
 
         [Test]
-        public void Lambdas()
+        public void It_supports_Lambdas()
         {
             var template = Template("{{#Lambda}}{{name}} is awesome.{{/Lambda}}");
             var compiled = template.Compile<TypeTestClass>(null);
