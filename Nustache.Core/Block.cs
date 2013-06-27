@@ -38,6 +38,16 @@ namespace Nustache.Core
             {
                 context.Push(this, value);
 
+                if (typeof(Lambda).BaseType.IsAssignableFrom(value.Type))
+                {
+                    return
+                        Expression.Call(
+                            Expression.Call(value, value.Type.GetMethod("Invoke"),
+                                Expression.Constant(InnerSource())),
+                            typeof(object).GetMethod("ToString"));
+                }
+
+
                 var expression = CompoundExpression.NullCheck(value, 
                     nullValue: "", 
                     returnIfNotNull: base.Compile(context));

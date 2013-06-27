@@ -119,6 +119,15 @@ namespace Nustache.Core.Tests
             Assert.AreEqual("Showing 0 values", result);
         }
 
+        [Test]
+        public void Lambdas()
+        {
+            var template = Template("{{#Lambda}}{{name}} is awesome.{{/Lambda}}");
+            var compiled = template.Compile<TypeTestClass>(null);
+            var result = compiled(new TypeTestClass { Lambda = (text) => string.Format("<b>{0}</b>", text) });
+            Assert.AreEqual("<b>{{name}} is awesome.</b>", result);   
+        }
+
         private Func<T, string> Compiled<T>(string text) where T : class
         {
             return Template(text).Compile<T>(null);
