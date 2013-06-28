@@ -37,6 +37,13 @@ namespace Nustache.Core
             parser.Parse(this, scanner.Scan(template));
         }
 
+        /// <summary>
+        /// Compiles the template into a Lambda function which can be executed later.
+        /// </summary>
+        /// <typeparam name="T">The type which the template will render against.  Missing
+        /// properties/methods/fields will result in CompilationExceptions.</typeparam>
+        /// <param name="templateLocator">The delegate to use to locate templates for inclusion.</param>
+        /// <returns>A lambda expression representing the compiled template.</returns>
         public Func<T, string> Compile<T>(TemplateLocator templateLocator) where T : class
         {
             var param = Expression.Parameter(typeof(T), "data");
@@ -44,10 +51,19 @@ namespace Nustache.Core
             var context = new CompileContext(this, typeof(T), param, templateLocator);
 
             var expression = Compile(context);
-            Console.WriteLine(expression.ToString());
+
             return (Expression.Lambda<Func<T, string>>(expression, param)).Compile();
         }
 
+        /// <summary>
+        /// Compiles the template into a Lambda function which can be executed later.
+        /// This version allows reflective compilation of templates.
+        /// </summary>
+        /// <param name="compileFor">The type to compile the template for.Missing
+        /// properties/methods/fields will result in CompilationExceptions.</param>
+        /// <param name="templateLocator">The delegate to use to locate templates for inclusion.</param>
+        /// <returns>A lambda expression representing the compiled template.  The lambda takes and object
+        /// and immediately casts it to <paramref name="compileFor"/>.</returns>
         public Func<object, string> Compile(Type compileFor, TemplateLocator templateLocator)
         {
             var param = Expression.Parameter(typeof(object), "data");
@@ -56,7 +72,7 @@ namespace Nustache.Core
                 Expression.Convert(param, compileFor), templateLocator);
 
             var expression = Compile(context);
-            Console.WriteLine(expression.ToString());
+
             return (Expression.Lambda<Func<object, string>>(expression, param)).Compile();
         }
 
