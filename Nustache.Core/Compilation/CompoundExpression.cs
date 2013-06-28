@@ -7,6 +7,7 @@ using System.Collections;
 
 namespace Nustache.Core.Compilation
 {
+    // TODO: The framework has a way of doing custom expressions. Use that.
     public static class CompoundExpression
     {
         public static Expression Enumerator(Func<Expression, Expression> itemCallback, Expression enumerable)
