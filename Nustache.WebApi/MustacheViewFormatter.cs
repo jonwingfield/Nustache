@@ -69,7 +69,7 @@ namespace Nustache.WebApi
                     template.Load(streamReader);
                 }
                 compiledTemplate = template.Compile(type, null);
-                _templateCache[viewName] = template;
+                _templateCache[viewName] = compiledTemplate;
             }
 
             using (var templateWriter = new StreamWriter(writeStream))
