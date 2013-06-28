@@ -1,3 +1,4 @@
+
 namespace Nustache.Core
 {
     public class Block : Section

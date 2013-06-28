@@ -64,7 +64,7 @@ namespace Nustache.Core
             }
         }
 
-        protected string InnerSource()
+        internal string InnerSource()
         {
             var sb = new StringBuilder();
             foreach (var part in Parts)
@@ -77,7 +77,7 @@ namespace Nustache.Core
             return sb.ToString();
         }
 
-        public override string Source()
+        public override string Source() 
         {
             return "{{#" + _name + "}}" + InnerSource() + "{{/" + _name + "}}";
         }
