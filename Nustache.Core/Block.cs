@@ -1,7 +1,3 @@
-using System.Linq.Expressions;
-using System.Linq;
-using System.Collections.Generic;
-using Nustache.Core.Compilation;
 
 namespace Nustache.Core
 {

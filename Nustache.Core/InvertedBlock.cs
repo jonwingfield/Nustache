@@ -1,6 +1,4 @@
-﻿using System.Linq.Expressions;
-using Nustache.Core.Compilation;
-namespace Nustache.Core
+﻿namespace Nustache.Core
 {
     public class InvertedBlock : Section
     {

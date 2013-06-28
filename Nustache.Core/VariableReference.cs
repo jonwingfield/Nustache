@@ -1,8 +1,5 @@
 using System;
 using System.Text.RegularExpressions;
-using System.Text;
-using System.Linq.Expressions;
-using Nustache.Core.Compilation;
 
 namespace Nustache.Core
 {
