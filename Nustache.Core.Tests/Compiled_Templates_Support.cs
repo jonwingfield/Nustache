@@ -16,6 +16,7 @@ namespace Nustache.Core.Tests
         public List<SubObject> Items { get; set; }
         public string[] Strings { get; set; }
         public string OuterOnly { get; set; }
+        public DerivedObject Derived { get; set; }
     }
 
     public class SubObject
@@ -24,7 +25,11 @@ namespace Nustache.Core.Tests
         public bool TestBool { get; set; }
 
         public SubObject Sub { get; set; }
+
+        public string DoSomething() { return "done"; }
     }
+
+    public class DerivedObject : SubObject { }
 
     [TestFixture]
     public class Compiled_Templates_Support
@@ -261,6 +266,15 @@ namespace Nustache.Core.Tests
             var compiled = template.Compile<TestObject>(null);
             var result = compiled(new TestObject { Sub = new SubObject(), OuterOnly = "Blah" });
             Assert.AreEqual("A template with  Blah here ", result);
+        }
+
+        [Test]
+        public void Inherited_properties_and_methods()
+        {
+            var template = Template("A template with {{#Derived}} {{SubText}} here  {{DoSomething}} {{/Derived}}");
+            var compiled = template.Compile<TestObject>(null);
+            var result = compiled(new TestObject { Derived = new DerivedObject { SubText = "Blah" } });
+            Assert.AreEqual("A template with  Blah here  done ", result);
         }
 
         [Test, ExpectedException(ExpectedException=typeof(CompilationException), 
