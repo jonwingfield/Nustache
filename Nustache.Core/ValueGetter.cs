@@ -179,7 +179,7 @@ namespace Nustache.Core
 
         public override Expression CompiledGetter(Type targetType, Expression dataParameter)
         {
-            return Expression.Property(dataParameter, _propertyInfo.GetGetMethod());
+            return Expression.Property(dataParameter, _propertyInfo);
         }
     }
 
