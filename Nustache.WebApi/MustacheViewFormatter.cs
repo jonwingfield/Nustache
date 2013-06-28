@@ -55,25 +55,26 @@ namespace Nustache.WebApi
         public override void WriteToStream(Type type, object value, System.IO.Stream writeStream, System.Net.Http.HttpContent content)
         {
             string viewName = ViewNameFrom(type);
-            Template template = null;
+            Func<object, string> compiledTemplate = null;
 
             if (_templateCache.Contains(viewName))
             {
-                template = (Template)_templateCache[viewName];
+                compiledTemplate = (Func<object, string>)_templateCache[viewName];
             }
             else
             {
-                template = new Template();
+                var template = new Template();
                 using (var streamReader = _templateLoader.Load(type))
                 {
                     template.Load(streamReader);
                 }
+                compiledTemplate = template.Compile(type, null);
                 _templateCache[viewName] = template;
             }
 
             using (var templateWriter = new StreamWriter(writeStream))
             {
-                template.Render(value, templateWriter, null);
+                templateWriter.Write(compiledTemplate(value));
             }
         }
     }
