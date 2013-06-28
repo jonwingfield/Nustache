@@ -24,6 +24,7 @@ namespace Nustache.Core.Tests
             public Dictionary<string, int> ADictionary { get; set; }
             public Dictionary<string, TestObject> ComplexDictionary { get; set; }
             public Func<string, Object> Lambda { get; set; }
+            public IEnumerable<string> RawEnumerable { get; set; }
         }
 
         [Test]
@@ -126,6 +127,15 @@ namespace Nustache.Core.Tests
             var compiled = template.Compile<TypeTestClass>(null);
             var result = compiled(new TypeTestClass { Lambda = (text) => string.Format("<b>{0}</b>", text) });
             Assert.AreEqual("<b>{{name}} is awesome.</b>", result);   
+        }
+
+        [Test]
+        public void It_supports_raw_enumerables()
+        {
+            var template = Template("{{#RawEnumerable}}{{.}}{{/RawEnumerable}}");
+            var compiled = template.Compile<TypeTestClass>(null);
+            var result = compiled(new TypeTestClass { RawEnumerable = new List<string> { "hello", " world" } });
+            Assert.AreEqual("hello world", result);   
         }
 
         private Func<T, string> Compiled<T>(string text) where T : class

@@ -12,9 +12,11 @@ namespace Nustache.Core.Compilation
     {
         public static Expression Enumerator(Func<Expression, Expression> itemCallback, Expression enumerable)
         {
-            var listType = enumerable.Type.GetInterface("IEnumerable`1").GetGenericArguments().First();
-            var enumeratorMethod = enumerable.Type.GetInterfaces()
-                .First(item => item.Name == "IEnumerable`1")
+            var enumerableInterface = enumerable.Type.Name == "IEnumerable`1" ? 
+                enumerable.Type :
+                enumerable.Type.GetInterface("IEnumerable`1");
+            var listType = enumerableInterface.GetGenericArguments().First();
+            var enumeratorMethod = enumerableInterface
                 .GetMethod("GetEnumerator");
 
             var enumerator = Expression.Variable(typeof(IEnumerator<>)
