@@ -24,19 +24,6 @@ namespace Nustache.Core
             context.Pop();
         }
 
-        internal override System.Linq.Expressions.Expression Compile(CompileContext context)
-        {
-            return context.GetInnerExpressions(Name, value =>
-            {
-                // the logic here is really confusing, but since GetInnerExpressions does 
-                // the truthiness check, it is basically the same as Block.Compile
-
-                var expression = base.Compile(context);
-
-                return expression;
-            }, invert: true);
-        }
-
         public override string ToString()
         {
             return string.Format("InvertedBlock(\"{0}\")", Name);

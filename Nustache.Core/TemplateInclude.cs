@@ -34,10 +34,5 @@ namespace Nustache.Core
         {
             return string.Format("TemplateInclude(\"{0}\")", _name);
         }
-
-        internal override Expression Compile(CompileContext context)
-        {
-            return context.Include(_name);
-        }
     }
 }
