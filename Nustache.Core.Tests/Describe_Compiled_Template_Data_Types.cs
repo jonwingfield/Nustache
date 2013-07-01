@@ -22,6 +22,7 @@ namespace Nustache.Core.Tests
             public string Method() { return "returned from method"; }
 
             public Dictionary<string, int> ADictionary { get; set; }
+            public IDictionary<string, int> RawDictionary { get; set; }
             public Dictionary<string, TestObject> ComplexDictionary { get; set; }
             public Func<string, Object> Lambda { get; set; }
             public IEnumerable<string> RawEnumerable { get; set; }
@@ -118,6 +119,22 @@ namespace Nustache.Core.Tests
 
             Assert.Inconclusive("For integer types this is returning default value instead of empty string");
             Assert.AreEqual("Showing 0 values", result);
+        }
+
+        [Test]
+        public void It_supports_raw_dictionaries()
+        {
+            var template = Template("Showing {{RawDictionary.key1}} values and {{RawDictionary.value1}}");
+            var compiled = template.Compile<TypeTestClass>(null);
+            var result = compiled(new TypeTestClass
+            {
+                RawDictionary = new Dictionary<string, int>
+                {
+                    { "key1", 10 },
+                    { "value1", 15 }
+                }
+            });
+            Assert.AreEqual("Showing 10 values and 15", result);            
         }
 
         [Test]
