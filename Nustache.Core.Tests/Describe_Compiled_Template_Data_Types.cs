@@ -22,9 +22,11 @@ namespace Nustache.Core.Tests
             public string Method() { return "returned from method"; }
 
             public Dictionary<string, int> ADictionary { get; set; }
+            public IDictionary<string, int> RawDictionary { get; set; }
             public Dictionary<string, TestObject> ComplexDictionary { get; set; }
             public Func<string, Object> Lambda { get; set; }
             public IEnumerable<string> RawEnumerable { get; set; }
+            public TestObject[] Array { get; set; }
         }
 
         [Test]
@@ -121,6 +123,22 @@ namespace Nustache.Core.Tests
         }
 
         [Test]
+        public void It_supports_raw_dictionaries()
+        {
+            var template = Template("Showing {{RawDictionary.key1}} values and {{RawDictionary.value1}}");
+            var compiled = template.Compile<TypeTestClass>(null);
+            var result = compiled(new TypeTestClass
+            {
+                RawDictionary = new Dictionary<string, int>
+                {
+                    { "key1", 10 },
+                    { "value1", 15 }
+                }
+            });
+            Assert.AreEqual("Showing 10 values and 15", result);            
+        }
+
+        [Test]
         public void It_supports_Lambdas()
         {
             var template = Template("{{#Lambda}}{{name}} is awesome.{{/Lambda}}");
@@ -136,6 +154,15 @@ namespace Nustache.Core.Tests
             var compiled = template.Compile<TypeTestClass>(null);
             var result = compiled(new TypeTestClass { RawEnumerable = new List<string> { "hello", " world" } });
             Assert.AreEqual("hello world", result);   
+        }
+
+        [Test]
+        public void It_supports_arrays()
+        {
+            var template = Template("Here {{#Array}}{{TestString}}{{/Array}} is");
+            var compiled = template.Compile<TypeTestClass>(null);
+            var result = compiled(new TypeTestClass { Array = new[] { new TestObject { TestString = "A String" } } });
+            Assert.AreEqual("Here A String is", result);   
         }
 
         private Func<T, string> Compiled<T>(string text) where T : class

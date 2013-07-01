@@ -6,7 +6,7 @@ using System.Linq.Expressions;
 using System.Collections;
 using Nustache.Core.Compilation;
 
-namespace Nustache.Core
+namespace Nustache.Core.Compilation
 {
     public class CompileContext
     {
