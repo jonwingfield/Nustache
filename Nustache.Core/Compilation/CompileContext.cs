@@ -83,6 +83,7 @@ namespace Nustache.Core.Compilation
                 }
             }
             
+            // TODO: support enuerating dictionaries
             //else if (GenericIDictionaryUtil.IsInstanceOfGenericIDictionary(value))
             //{
             //    if ((value as IEnumerable).GetEnumerator().MoveNext())
@@ -97,17 +98,6 @@ namespace Nustache.Core.Compilation
             //    {
             //        yield return value;
             //    }
-            //}
-            //else if (value is IEnumerable)
-            //{
-            //    foreach (var item in ((IEnumerable)value))
-            //    {
-            //        yield return item;
-            //    }
-            //}
-            //else
-            //{
-            //    yield return value;
             //}
         }
 
