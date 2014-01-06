@@ -30,17 +30,32 @@ namespace Nustache.WebApi
 
         public bool CanLoad(Type viewType)
         {
-            return File.Exists(PathTo(viewType));
+            return CanLoad(NameFromType(viewType));
         }
 
         public StreamReader Load(Type viewType)
         {
-            return File.OpenText(PathTo(viewType));
+            return Load(NameFromType(viewType));
         }
 
-        private string PathTo(Type viewType)
+        private string NameFromType(Type viewType)
         {
-            return root + String.Format(_viewLocationFormat, viewType.Name);
+            return viewType.Name;
+        }
+
+        private string PathTo(string viewTypeName)
+        {
+            return root + String.Format(_viewLocationFormat, viewTypeName);
+        }
+
+        public bool CanLoad(string viewTypeName)
+        {
+            return File.Exists(PathTo(viewTypeName));
+        }
+
+        public StreamReader Load(string viewTypeName)
+        {
+            return File.OpenText(PathTo(viewTypeName));
         }
     }
 }
