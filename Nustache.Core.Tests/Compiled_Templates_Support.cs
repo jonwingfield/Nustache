@@ -105,6 +105,17 @@ namespace Nustache.Core.Tests
         }
 
         [Test]
+        public void Truthy_Strings()
+        {
+            var template = Template("{{#TestString}}{{TestString}} world{{/TestString}}");
+            var writer = new StringWriter();
+            template.Render(new TestObject { TestString = "hello" }, writer, null);
+            var compiled = template.Compile<TestObject>(null);
+            var result = compiled(new TestObject { TestString = "hello" });
+            Assert.AreEqual("hello world", result); 
+        }
+
+        [Test]
         public void Boolean_Nested_Sections()
         {
             var template = Template("A template with {{#Sub.TestBool}}data here{{/Sub.TestBool}}");
