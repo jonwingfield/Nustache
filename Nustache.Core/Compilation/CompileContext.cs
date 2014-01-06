@@ -18,7 +18,14 @@ namespace Nustache.Core.Compilation
         private readonly Stack<Expression> _targetObjectStack = new Stack<Expression>();
         private readonly Stack<Section> _sectionStack = new Stack<Section>();
         private readonly TemplateLocator templateLocator;
-        private readonly List<string> _includedTemplates = new List<string>();
+        private readonly Dictionary<string, IncludedTemplate> _includedTemplates = new Dictionary<string, IncludedTemplate>();
+
+        private class IncludedTemplate
+        {
+            public IncludedTemplate(int includeLevel) { IncludeLevel = includeLevel; }
+            public readonly int IncludeLevel;
+            public Expression Compiled;
+        }
 
         public CompileContext(Section section, Type targetType, Expression dataParam, TemplateLocator templateLocator)
         {
@@ -185,9 +192,15 @@ namespace Nustache.Core.Compilation
 
             TemplateDefinition templateDefinition = GetTemplateDefinition(templateName);
 
-            if (_includedTemplates.Contains(templateName))
-                throw new NustacheException("Compiled recursive templates will be supported in a later release");
-            _includedTemplates.Add(templateName);
+            if (_includedTemplates.ContainsKey(templateName))
+            {
+                if (_includedTemplates[templateName].IncludeLevel < _includeLevel)
+                    throw new NustacheException("Compiled recursive templates will be supported in a later release");
+            }
+            else
+            {
+                _includedTemplates.Add(templateName, new IncludedTemplate(_includeLevel));
+            }
 
             if (templateDefinition != null)
             {
