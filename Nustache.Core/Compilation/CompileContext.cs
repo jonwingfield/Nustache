@@ -55,6 +55,10 @@ namespace Nustache.Core.Compilation
                     innerExpression(value),
                     Expression.Constant(""));
             }
+            else if (value.Type == typeof(string))
+            {
+                return CompoundExpression.NullCheck(value, returnIfNotNull: innerExpression(value));
+            }
             else if (value.Type.GetInterface("IEnumerable") != null)
             {
                 if (invert)
