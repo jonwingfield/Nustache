@@ -224,6 +224,25 @@ namespace Nustache.Core.Tests
         }
 
         [Test]
+        public void Supports_Multiple_Partials_With_the_Same_Name()
+        {
+            var template = Template("{{>text}} after partial {{>text}}");
+            var compiled = template.Compile<TestObject>(name =>
+                name == "text" ? Template("{{TestString}} {{#Sub.TestBool}}I am in you{{/Sub.TestBool}}") : null);
+            var result = compiled(new TestObject { TestString = "a", Sub = new SubObject { TestBool = true } });
+            Assert.AreEqual("a I am in you after partial a I am in you", result);
+        }
+
+        //[Test]
+        //public void Doesnt_Support_Recursion_in_Partials()
+        //{
+        //    var template = Template("{{>text}}");
+        //    var compiled = template.Compile<TestObject>(name =>
+        //        name == "text" ? Template("{{>text2}} test1") : (new == "text2" ? Template("t);
+        //    var result = compiled(new TestObject { });
+        //}
+
+        [Test]
         public void Internal_Templates_AKA_Inline_Partials()
         {
             var template = Template(
