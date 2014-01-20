@@ -57,7 +57,11 @@ namespace Nustache.Core.Compilation
             }
             else if (value.Type == typeof(string))
             {
-                return CompoundExpression.NullCheck(value, returnIfNotNull: innerExpression(value));
+                Expression nullOrEmpty = Expression.Call(null, typeof(string).GetMethod("IsNullOrEmpty"), value);
+                return Expression.Condition(
+                    invert ? nullOrEmpty : Expression.Not(nullOrEmpty),
+                    innerExpression(value),
+                    Expression.Constant(""));
             }
             else if (value.Type.GetInterface("IEnumerable") != null)
             {
